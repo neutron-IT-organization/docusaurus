@@ -73,7 +73,8 @@ const config = {
             position: "left",
             label: "Tutorial",
           },
-          { to: "/blog", label: "Blog", position: "left" },
+          //{ to: "/blog", label: "Blog", position: "left" },
+          { to: "/docs", label: "docs", position: "left" },
           {
             href: "https://github.com/neutron-IT-organization/docusaurus",
             label: "GitHub",
@@ -113,10 +114,6 @@ const config = {
           {
             title: "More",
             items: [
-              {
-                label: "Blog",
-                to: "/blog",
-              },
               {
                 label: "GitHub",
                 href: "https://github.com/facebook/docusaurus",
