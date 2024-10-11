@@ -8,9 +8,9 @@ import { themes as prismThemes } from "prism-react-renderer";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "My Site",
-  tagline: "Dinosaurs are cool",
-  favicon: "img/favicon.ico",
+  title: "NEUTRON IT",
+  tagline: "Nos formations par Neutron IT",
+  favicon: "img/logo.png",
 
   // Set the production url of your site here
   url: "https://github.com",
