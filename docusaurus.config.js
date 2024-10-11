@@ -73,13 +73,13 @@ const config = {
             position: "left",
             label: "Tutorial",
           },
-          //{ to: "/blog", label: "Blog", position: "left" },
-          { to: "/docs", label: "docs", position: "left" },
-          {
-            href: "https://github.com/neutron-IT-organization/docusaurus",
-            label: "GitHub",
-            position: "right",
-          },
+          // //{ to: "/blog", label: "Blog", position: "left" },
+          // { to: "/docs", label: "docs", position: "left" },
+          // {
+          //   href: "https://github.com/neutron-IT-organization/docusaurus",
+          //   label: "GitHub",
+          //   position: "right",
+          // },
         ],
       },
       footer: {
