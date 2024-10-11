@@ -26,13 +26,13 @@ Pour utiliser la perspective Developer de la console Web et créer votre premier
 
 1. Dans la vue developer, cliquez sur votre Project en haut à gauche puis sur  "Create a new project" pour ouvrir l'assistant Create Project.
 
-![Create Project](./images/create_project.png){: style="height:300px"}
+![Create Project](./images/create_project.png)
 
 Créez un projet nommé "console-exploration-YOURCITY" à l'aide de cet assistant et ajoutez une brève description du projet.
 
 2. Cliquez sur "Create" pour finaliser la création du projet.
 
-![Create Project](./images/assistant_create_project.png){: style="height:300px"}
+![Create Project](./images/assistant_create_project.png)
 
 
 3. Ensuite, cliquez sur "+Add" pour créer une application.
@@ -41,11 +41,11 @@ Créez un projet nommé "console-exploration-YOURCITY" à l'aide de cet assistan
 
    - Cliquez dans "Create applications using samples" sur le lien "Basic Quarkus".
 
-   ![Basic quarkus](./images/basic_quarkus.png){: style="height:300px"}
+   ![Basic quarkus](./images/basic_quarkus.png)
 
    - Examinez les valeurs par défaut de l'exemple d'application, puis sélectionnez "Create" en bas de la page.
 
-   ![Create application](./images/create_application.png){: style="height:300px"}
+   ![Create application](./images/create_application.png)
 
 
 5. Une fois le déploiement effectué, rendez vous dans à la page "Topology" qui affiche maintenant le déploiement de l'application "code-with-quarkus".

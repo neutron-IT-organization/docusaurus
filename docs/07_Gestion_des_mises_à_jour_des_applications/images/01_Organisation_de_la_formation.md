@@ -42,4 +42,4 @@ Ces sessions pratiques sont conçues pour offrir une expérience d'apprentissage
 
 Enfin n'hésitez pas des questions !
 
-![container stack](./images/chat.png){: style="height:80px"}
+![container stack](./images/chat.png)

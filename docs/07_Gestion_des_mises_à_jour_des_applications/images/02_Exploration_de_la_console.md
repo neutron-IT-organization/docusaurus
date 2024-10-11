@@ -28,7 +28,7 @@ Sur la page de connexion, vous verrez plusieurs options de fournisseurs d'identi
 
 La console Web OpenShift propose deux modes principaux : Administrator et Developer. La disposition des menus et les fonctionnalités disponibles varient en fonction du mode sélectionné. En haut du menu latéral, un sélecteur de perspective permet de naviguer facilement entre les modes Administrator et Developer.
 
-![First login](./images/view.png){: style="height:300px"}
+![First login](./images/view.png)
 
 Chaque mode offre des pages et des catégories de menus spécifiquement conçues pour répondre aux besoins de l'utilisateur. Le mode Administrator est orienté vers la configuration, la gestion du cluster, les déploiements, et les opérations courantes. En revanche, le mode Developer se concentre sur la conception et le déploiement d'applications.
 
