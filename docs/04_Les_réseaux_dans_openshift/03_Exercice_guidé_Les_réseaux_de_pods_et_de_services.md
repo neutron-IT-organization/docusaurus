@@ -121,7 +121,7 @@ oc get nodes -o jsonpath='{range .items[*]}{.status.addresses[?(@.type=="Interna
 <NODE_IP>
 ```
 
-Accédez dans votre moteur de recherche a http://<NODE_IP>:30007 pour accéder a votre application.
+Accédez dans votre moteur de recherche a ```http://<NODE_IP>:30007``` pour accéder a votre application.
 
 Remplacez `<NODE_IP>` par l'adresse IP d'un nœud de votre cluster.
 
