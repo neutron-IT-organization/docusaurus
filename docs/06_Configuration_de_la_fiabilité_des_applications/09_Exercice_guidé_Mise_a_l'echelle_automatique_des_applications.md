@@ -1,17 +1,18 @@
+D'accord, voici une version épurée de l'exercice, sans les parties 5 et 6, mais avec un développement plus détaillé des autres étapes pour une meilleure compréhension et un déroulement plus fluide.
+
+---
+
 # Exercice Guidé : Mise à l’échelle automatique des applications dans OpenShift
 
-Cet exercice vous guidera à travers la configuration et la gestion de la mise à l’échelle automatique de vos applications déployées dans OpenShift. Vous apprendrez à créer un autoscaler de pod horizontal (HPA) pour adapter dynamiquement les ressources en fonction de la charge, garantissant ainsi une haute disponibilité et une utilisation optimale des ressources.
+Cet exercice vous montre comment configurer la mise à l’échelle automatique pour une application déployée dans OpenShift à l'aide de l'**HorizontalPodAutoscaler (HPA)**.
 
-### Objectifs de l'Exercice
+## Objectif de la Section
 
-- Comprendre les concepts de base de la mise à l'échelle automatique dans Kubernetes.
-- Configurer un autoscaler de pod horizontal (HPA) pour une application.
-- Vérifier le comportement de la mise à l'échelle en fonction de la charge de l'application.
-- Ajuster les paramètres de l'HPA pour optimiser la performance et la résilience de l'application.
+Configurer un **HorizontalPodAutoscaler (HPA)** pour ajuster dynamiquement le nombre de réplicas d'une application en fonction de l'utilisation du CPU et observer son comportement sous différentes charges.
 
 ## Prérequis
 
-Pour cet exercice, vous allez déployer une application simple qui simule une charge de CPU. Vous utiliserez un déploiement de `php-apache` qui génère une charge sur le processeur pour tester la mise à l’échelle automatique. Créez un fichier nommé `cpu-load-app.yaml` avec le contenu suivant :
+Déployez une application de simulation de charge CPU à l’aide du manifest suivant, nommé `cpu-load-app.yaml` :
 
 ```yaml
 apiVersion: apps/v1
@@ -36,6 +37,31 @@ spec:
               cpu: 200m
           ports:
             - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cpu-load-app
+spec:
+  selector:
+    app: cpu-load-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cpu-load-app
+spec:
+  to:
+    kind: Service
+    name: cpu-load-app
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
 ```
 
 **Appliquez ce déploiement avec la commande suivante :**
@@ -44,112 +70,89 @@ spec:
 oc apply -f cpu-load-app.yaml
 ```
 
-## Étape 1 : Comprendre la mise à l’échelle automatique
+## Étapes
 
-1. **Objectif :** Comprendre les principes de base de l’HorizontalPodAutoscaler (HPA) et de son fonctionnement en boucle.
+### Étape 1 : Créer un HPA pour Ajuster Dynamiquement les Réplicas
 
-2. **Résumé :** L’HPA ajuste automatiquement le nombre de réplicas d’un déploiement en fonction des ressources utilisées par les pods, comme le CPU ou la mémoire. L’HPA collecte les métriques de performance toutes les 15 secondes et ajuste le nombre de pods pour maintenir un niveau de charge optimal.
-
-## Étape 2 : Créer une ressource de mise à l’échelle automatique de pod horizontale (HPA)
-
-1. **Objectif :** Créer un HPA pour ajuster dynamiquement le nombre de réplicas de l'application en fonction de l'utilisation du CPU.
-
-2. **Action :** Utilisez la commande suivante pour créer un HPA qui ajuste les réplicas entre 1 et 10 pods, en essayant de maintenir une utilisation CPU à 50 % :
+Utilisez la commande suivante pour créer un **HorizontalPodAutoscaler (HPA)** qui ajuste le nombre de réplicas entre 1 et 10 pods, en maintenant une utilisation de CPU à 50 % :
 
 ```bash
 oc autoscale deployment/cpu-load-app --min 1 --max 10 --cpu-percent 50
 ```
 
-3. **Vérification :** Affichez les HPA pour vérifier leur création :
+### Étape 2 : Observer le Comportement du HPA
 
-```bash
-oc get hpa
-```
+1. **Vérifier l'état du HPA :**
 
-La sortie devrait inclure des informations sur le HPA créé, indiquant les seuils de CPU et le nombre de réplicas.
+   Utilisez la commande suivante pour afficher les HPA présents et vérifier les détails :
 
-## Étape 3 : Générer une charge de CPU pour tester la mise à l’échelle
+   ```bash
+   oc get hpa
+   ```
 
-1. **Objectif :** Simuler une charge de CPU pour observer l'effet de la mise à l'échelle automatique.
+   Vous verrez une sortie qui montre le nom du HPA, le seuil de CPU, le nombre de réplicas actuels et la cible d'utilisation de CPU.
 
-2. **Action :** Exécutez un `kubectl` ou `oc` command pour générer une requête en boucle sur le service exposé par l'application :
+2. **Analyser le comportement du HPA :**
 
-```bash
-while true; do curl http://<route-de-votre-app>; done
-```
+   Le HPA ajuste automatiquement le nombre de réplicas de `cpu-load-app` en fonction de l'utilisation de la CPU. Si l'utilisation moyenne du CPU des pods dépasse 50 %, le HPA augmentera le nombre de réplicas pour équilibrer la charge. À l'inverse, si l'utilisation est inférieure à ce seuil, le HPA réduira le nombre de réplicas.
 
-**Remarque :** Remplacez `<route-de-votre-app>` par l'URL de la route associée à l'application `cpu-load-app`.
+### Étape 3 : Générer une Charge de CPU pour Tester la Mise à l’Échelle
 
-3. **Vérification :** Surveillez la montée en charge des pods :
+1. **Récupérer l'URL de la Route :**
 
-```bash
-oc get pods -l app=cpu-load-app --watch
-```
+   Récupérez l'URL de la route créée pour accéder à votre application :
 
-Vous devriez voir le nombre de pods augmenter pour répondre à la demande de CPU.
+   ```bash
+   oc get route cpu-load-app -o jsonpath='{.spec.host}'
+   ```
 
-## Étape 4 : Ajuster les paramètres de l’HPA
+   Notez cette URL, car elle sera utilisée pour simuler la charge.
 
-1. **Objectif :** Modifier les paramètres de l’HPA pour mieux adapter la réponse aux pics de charge.
+2. **Simuler une Charge de CPU :**
 
-2. **Action :** Éditez le HPA pour ajuster les seuils de CPU ou le nombre maximal de réplicas :
+   Exécutez une boucle de requêtes pour générer une charge sur l'application :
 
-```bash
-oc edit hpa cpu-load-app
-```
+   ```bash
+   while true; do curl http://<URL-de-la-route>; done
+   ```
 
-Modifiez les valeurs de `minReplicas`, `maxReplicas`, ou `targetCPUUtilizationPercentage` pour ajuster la réponse de la mise à l’échelle.
+   Remplacez `<URL-de-la-route>` par l'URL récupérée à l'étape précédente.
 
-3. **Vérification :** Observez les effets de la modification en répétant la génération de charge et en surveillant la création de pods.
+   Cette boucle de requêtes va générer une charge continue sur l'application, ce qui forcera l'utilisation de la CPU à augmenter.
 
-## Étape 5 : Créer un HPA à partir d’un fichier YAML
+### Étape 4 : Observer la Montée en Charge des Pods
 
-1. **Objectif :** Créer un HPA à l’aide d’un fichier YAML pour plus de contrôle sur la configuration.
+1. **Surveiller les Pods :**
 
-2. **Action :** Créez un fichier nommé `cpu-load-hpa.yaml` avec le contenu suivant :
+   Surveillez le comportement des pods pour voir comment l'application réagit à la charge :
 
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: cpu-load-app
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: cpu-load-app
-  minReplicas: 1
-  maxReplicas: 10
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 50
-```
+   ```bash
+   oc get pods -l app=cpu-load-app --watch
+   ```
 
-3. **Commande :** Appliquez le fichier pour créer le HPA :
+   Cette commande affiche les pods correspondant à l'application `cpu-load-app` et met à jour la liste en temps réel. Vous devriez voir de nouveaux pods apparaître à mesure que l'utilisation de la CPU augmente.
 
-```bash
-oc apply -f cpu-load-hpa.yaml
-```
+2. **Analyser les résultats :**
 
-4. **Vérification :** Vérifiez que le HPA est configuré correctement :
+   Vous pouvez observer que le nombre de pods augmente au fur et à mesure que la charge augmente. Cela montre que le HPA fonctionne et ajuste automatiquement le nombre de réplicas pour maintenir une utilisation de CPU à 50 %.
 
-```bash
-oc get hpa cpu-load-app -o yaml
-```
+### Étape 5 : Nettoyage des Ressources
 
-## Étape 6 : Nettoyage
-
-Après avoir terminé les tests, nettoyez les ressources créées pour libérer les ressources du cluster :
+Une fois que vous avez terminé l'exercice et que vous souhaitez libérer les ressources du cluster, exécutez les commandes suivantes pour supprimer les objets créés :
 
 ```bash
 oc delete deployment cpu-load-app
 oc delete hpa cpu-load-app
+oc delete service cpu-load-app
+oc delete route cpu-load-app
 ```
 
-## Conclusion
+## Observations
 
-En suivant cet exercice, vous avez appris à configurer et à gérer l'**HorizontalPodAutoscaler (HPA)** dans OpenShift. Vous avez exploré la création d'un HPA via la ligne de commande et les fichiers YAML, testé le comportement de mise à l’échelle dynamique sous différentes charges, et ajusté les paramètres pour une meilleure adaptation à vos besoins. Cela vous permet de garantir que votre application est prête à faire face aux variations de charge tout en optimisant l’utilisation des ressources.
+- **Mise à l’échelle automatique** : Vous pouvez observer que le HPA ajuste le nombre de pods pour maintenir une utilisation de CPU proche de la cible (50 % dans cet exemple).
+- **Réactivité** : La montée en charge peut prendre quelques secondes à quelques minutes en fonction de la capacité de votre cluster à démarrer de nouveaux pods.
+- **Impact des modifications** : En ajustant les paramètres de `minReplicas`, `maxReplicas` ou `targetCPUUtilizationPercentage`, vous pouvez influencer la manière dont le HPA répond aux variations de charge.
+
+---
+
+Ce guide vous permet de configurer et de tester un HPA pour une application simple dans OpenShift, tout en observant comment il répond aux changements de charge et comment ajuster ses paramètres pour une meilleure performance.

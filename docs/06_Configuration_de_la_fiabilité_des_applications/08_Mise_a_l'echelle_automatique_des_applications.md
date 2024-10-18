@@ -1,4 +1,4 @@
-### Haute disponibilité des applications dans Kubernetes : Mise à l’échelle automatique
+# Haute disponibilité des applications dans Kubernetes : Mise à l’échelle automatique
 
 #### 1. Différence entre le scaling vertical et le scaling horizontal
 
