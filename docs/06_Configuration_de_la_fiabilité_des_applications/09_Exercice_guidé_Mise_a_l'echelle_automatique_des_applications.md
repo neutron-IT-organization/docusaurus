@@ -31,12 +31,12 @@ spec:
     spec:
       containers:
         - name: php-apache
-          image: k8s.gcr.io/hpa-example
+          image: registry.access.redhat.com/ubi8/httpd-24:latest
           resources:
             requests:
-              cpu: 200m
+              cpu: 20m
           ports:
-            - containerPort: 80
+            - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -48,7 +48,7 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: 8080
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -59,7 +59,7 @@ spec:
     kind: Service
     name: cpu-load-app
   port:
-    targetPort: 80
+    targetPort: 8080
   tls:
     termination: edge
 ```
