@@ -1,7 +1,3 @@
-Voici un exercice guidé sur le thème des sondes d’intégrité dans OpenShift, suivant la structure que vous avez fournie.
-
----
-
 # Exercice Guidé : Configuration des Sondes d’Intégrité dans OpenShift
 
 Cet exercice vous montrera comment configurer des sondes d’intégrité dans OpenShift pour garantir que votre application reste opérationnelle et accessible.
@@ -181,7 +177,3 @@ oc delete route health-check-app
 
 - **Échec et redémarrage automatique** : Lorsque le pod échoue à répondre à la sonde Liveness, Kubernetes redémarre automatiquement le pod, garantissant ainsi la disponibilité de l'application.
 - **Préparation à recevoir du trafic** : La sonde Readiness assure que le pod est prêt à recevoir du trafic avant d’être réintégré au service, ce qui améliore l’expérience utilisateur.
-
----
-
-Cet exercice vous permet de configurer et de tester des sondes d’intégrité pour une application simple dans OpenShift, tout en observant comment elles influent sur le comportement et la résilience de l’application.
