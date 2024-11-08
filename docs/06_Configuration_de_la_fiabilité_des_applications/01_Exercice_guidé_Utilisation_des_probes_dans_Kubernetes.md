@@ -7,9 +7,6 @@ Dans cet exercice, vous apprendrez à :
 2. Configurer les sondes de **liveness** et de **readiness** pour une application déployée.
 3. Tester le comportement d'OpenShift lors de l'échec de chaque type de sonde.
 
-## Prérequis
-Avant de commencer, assurez-vous d’avoir accès à un cluster OpenShift et aux autorisations nécessaires pour créer des déploiements.
-
 ## Introduction
 Les applications peuvent rencontrer des problèmes de fonctionnement dans leurs conteneurs, souvent en raison de facteurs externes (connexions perdues, erreurs de configuration, etc.). Pour gérer ces situations, OpenShift offre des sondes de santé, qui vérifient périodiquement l’état des conteneurs :
 - **Liveness Probe** : vérifie si le conteneur doit être redémarré.
@@ -51,99 +48,37 @@ oc apply -f demo-deployment.yaml
 
 Ajoutez une sonde de liveness qui vérifiera périodiquement si l'application répond sur le chemin HTTP `/health`. Si cette vérification échoue, OpenShift redémarrera le conteneur.
 
-Mettez à jour votre fichier de déploiement comme suit :
+1. Dans la console OpenShift, allez dans **Workloads** > **Deployments** et sélectionnez votre déploiement **demo-app**.
+2. Sous l'onglet **Actions**, sélectionnez **Edit Health Checks** pour accéder aux sondes de santé.
+3. Cliquez sur **Add Liveness Probe**.
+4. Configurez la sonde comme suit :
+   - **Type** : HTTP
+   - **Path** : `/health` (ou un autre endpoint de santé si disponible dans l'application)
+   - **Port** : 8080
+   - **Initial Delay** : 10 secondes (délai avant la première vérification)
+   - **Period** : 5 secondes (fréquence des vérifications)
+   - **Timeout** : 1 seconde (temps avant de déclarer un échec)
+   - **Failure Threshold** : 3 échecs avant que le conteneur ne soit redémarré
+5. Enregistrez vos modifications.
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: demo-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: demo-app
-  template:
-    metadata:
-      labels:
-        app: demo-app
-    spec:
-      containers:
-      - name: demo-app
-        image: node:14
-        command: ["node", "-e", "require('http').createServer((req, res) => res.end('ok')).listen(8080)"]
-        ports:
-        - containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 1
-          failureThreshold: 3
-```
-
-Déployez les modifications :
-```bash
-oc apply -f demo-deployment.yaml
-```
-
-### Explications
-- **initialDelaySeconds** : Délai avant la première vérification.
-- **periodSeconds** : Intervalle entre les vérifications.
-- **timeoutSeconds** : Temps d'attente avant un échec.
-- **failureThreshold** : Nombre d'échecs consécutifs avant de redémarrer le conteneur.
+OpenShift ajoute maintenant la sonde de liveness à votre déploiement et commencera à surveiller l'état de votre conteneur. Si l'endpoint `/health` échoue trois fois, OpenShift redémarrera le conteneur.
 
 ## Etape 3 : Ajout de la **Readiness Probe**
 
 Ensuite, configurez la readiness probe pour vérifier si le conteneur est prêt à recevoir du trafic. Si le conteneur échoue cette vérification, il reste actif mais ne reçoit pas de trafic.
 
-Ajoutez les lignes suivantes dans votre configuration de déploiement :
+1. Toujours dans l'onglet **Edit Health Checks**, cliquez sur **Add Readiness Probe**.
+2. Configurez la sonde comme suit :
+   - **Type** : HTTP
+   - **Path** : `/health`
+   - **Port** : 8080
+   - **Initial Delay** : 5 secondes
+   - **Period** : 5 secondes
+   - **Timeout** : 1 seconde
+   - **Failure Threshold** : 3 échecs
+3. Enregistrez les modifications.
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: demo-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: demo-app
-  template:
-    metadata:
-      labels:
-        app: demo-app
-    spec:
-      containers:
-      - name: demo-app
-        image: node:14
-        command: ["node", "-e", "require('http').createServer((req, res) => res.end('ok')).listen(8080)"]
-        ports:
-        - containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 1
-          failureThreshold: 3
-```
-
-Déployez les modifications :
-```bash
-oc apply -f demo-deployment.yaml
-```
+Avec cette configuration, OpenShift n’enverra le trafic au conteneur que lorsque la readiness probe indique que le conteneur est prêt. 
 
 ### Explications
 - **Readiness Probe** vérifie que le conteneur peut recevoir des requêtes, par exemple, après un temps d'initialisation prolongé.
