@@ -1,7 +1,3 @@
-Voici l'exercice guidé sur la limitation de la capacité de calcul dans OpenShift :
-
----
-
 # Exercice Guidé : Limitation de la Capacité de Calcul dans OpenShift
 
 Dans cet exercice, nous allons pratiquer la configuration et la gestion de la limitation de la capacité de calcul dans OpenShift. Nous allons définir des limites maximales sur la quantité de CPU et de mémoire qu'un conteneur peut consommer, et observer comment OpenShift utilise ces limites pour contrôler l'utilisation des ressources sur le cluster.
