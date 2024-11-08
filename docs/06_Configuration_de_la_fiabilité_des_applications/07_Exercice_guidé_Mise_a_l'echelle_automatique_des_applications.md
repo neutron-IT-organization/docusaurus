@@ -1,7 +1,3 @@
-D'accord, voici une version épurée de l'exercice, sans les parties 5 et 6, mais avec un développement plus détaillé des autres étapes pour une meilleure compréhension et un déroulement plus fluide.
-
----
-
 # Exercice Guidé : Mise à l’échelle automatique des applications dans OpenShift
 
 Cet exercice vous montre comment configurer la mise à l’échelle automatique pour une application déployée dans OpenShift à l'aide de l'**HorizontalPodAutoscaler (HPA)**.
@@ -153,6 +149,3 @@ oc delete route cpu-load-app
 - **Réactivité** : La montée en charge peut prendre quelques secondes à quelques minutes en fonction de la capacité de votre cluster à démarrer de nouveaux pods.
 - **Impact des modifications** : En ajustant les paramètres de `minReplicas`, `maxReplicas` ou `targetCPUUtilizationPercentage`, vous pouvez influencer la manière dont le HPA répond aux variations de charge.
 
----
-
-Ce guide vous permet de configurer et de tester un HPA pour une application simple dans OpenShift, tout en observant comment il répond aux changements de charge et comment ajuster ses paramètres pour une meilleure performance.
