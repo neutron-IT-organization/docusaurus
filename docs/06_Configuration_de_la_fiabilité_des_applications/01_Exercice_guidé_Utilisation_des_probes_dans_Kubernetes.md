@@ -1,122 +1,157 @@
+### Exercice Guidé : Comprendre l'Utilité des Readiness et Liveness Probes dans OpenShift
 
-# Exercices guidé : Sondes de santé des applications sur OpenShift
+Cet exercice vous guidera à travers le déploiement d'une application sur OpenShift, l'ajout de sondes de readiness et liveness via la console OpenShift, puis la simulation de défaillances pour observer leur comportement respectif. 
 
-## Objectifs
-Dans cet exercice, vous apprendrez à :
-1. Comprendre l'importance des sondes de santé pour maintenir les applications en bonne santé dans OpenShift.
-2. Configurer les sondes de **liveness** et de **readiness** pour une application déployée.
-3. Tester le comportement d'OpenShift lors de l'échec de chaque type de sonde.
+---
 
-## Introduction
-Les applications peuvent rencontrer des problèmes de fonctionnement dans leurs conteneurs, souvent en raison de facteurs externes (connexions perdues, erreurs de configuration, etc.). Pour gérer ces situations, OpenShift offre des sondes de santé, qui vérifient périodiquement l’état des conteneurs :
-- **Liveness Probe** : vérifie si le conteneur doit être redémarré.
-- **Readiness Probe** : détermine si le conteneur peut recevoir du trafic.
+### Objectif
 
-## Etape 1 : Création du déploiement de base
+Cet exercice vise à démontrer :
+1. Comment une **readiness probe** empêche le trafic d'atteindre un conteneur non prêt.
+2. Comment une **liveness probe** redémarre un conteneur en cas de problème.
 
-Créez un fichier de déploiement pour une application simple. Dans cet exemple, nous utiliserons une application Node.js, exposée sur le port 8080.
+### Prérequis
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: demo-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: demo-app
-  template:
-    metadata:
-      labels:
-        app: demo-app
-    spec:
-      containers:
-      - name: demo-app
-        image: node:14
-        command: ["node", "-e", "require('http').createServer((req, res) => res.end('ok')).listen(8080)"]
-        ports:
-        - containerPort: 8080
-```
+- Accès à un cluster OpenShift.
+- Compte utilisateur avec les autorisations nécessaires pour déployer des applications et configurer des sondes.
+- `oc` CLI installé et configuré pour se connecter à votre cluster OpenShift.
 
-Déployez cette application sur votre cluster OpenShift :
-```bash
-oc apply -f demo-deployment.yaml
-```
+---
 
-## Etape 2 : Ajout de la **Liveness Probe**
+### Étape 1 : Déploiement de l’Application
 
-Ajoutez une sonde de liveness qui vérifiera périodiquement si l'application répond sur le chemin HTTP `/health`. Si cette vérification échoue, OpenShift redémarrera le conteneur.
+1. **Déployez le fichier `deployment.yaml` suivant**. Il s’agit d’une application Node.js avec deux endpoints : `/healthz` pour la liveness probe et `/readyz` pour la readiness probe. Les états de santé peuvent être modifiés via des endpoints `/toggle-ready` et `/toggle-live` pour tester les sondes.
 
-1. Dans la console OpenShift, allez dans **Workloads** > **Deployments** et sélectionnez votre déploiement **demo-app**.
-2. Sous l'onglet **Actions**, sélectionnez **Edit Health Checks** pour accéder aux sondes de santé.
-3. Cliquez sur **Add Liveness Probe**.
-4. Configurez la sonde comme suit :
-   - **Type** : HTTP
-   - **Path** : `/health` (ou un autre endpoint de santé si disponible dans l'application)
-   - **Port** : 8080
-   - **Initial Delay** : 10 secondes (délai avant la première vérification)
-   - **Period** : 5 secondes (fréquence des vérifications)
-   - **Timeout** : 1 seconde (temps avant de déclarer un échec)
-   - **Failure Threshold** : 3 échecs avant que le conteneur ne soit redémarré
-5. Enregistrez vos modifications.
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: probes-app
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: probes-app
+     template:
+       metadata:
+         labels:
+           app: probes-app
+       spec:
+         containers:
+         - name: probes-app
+           image: your-registry/probes-app:probes
+           ports:
+           - containerPort: 8080
+   ```
 
-OpenShift ajoute maintenant la sonde de liveness à votre déploiement et commencera à surveiller l'état de votre conteneur. Si l'endpoint `/health` échoue trois fois, OpenShift redémarrera le conteneur.
+2. **Appliquez le fichier de déploiement** :
+   ```bash
+   oc apply -f deployment.yaml
+   ```
 
-## Etape 3 : Ajout de la **Readiness Probe**
+3. **Vérifiez que le Pod est en cours d’exécution** :
+   ```bash
+   oc get pods -l app=probes-app
+   ```
 
-Ensuite, configurez la readiness probe pour vérifier si le conteneur est prêt à recevoir du trafic. Si le conteneur échoue cette vérification, il reste actif mais ne reçoit pas de trafic.
+---
 
-1. Toujours dans l'onglet **Edit Health Checks**, cliquez sur **Add Readiness Probe**.
-2. Configurez la sonde comme suit :
-   - **Type** : HTTP
-   - **Path** : `/health`
-   - **Port** : 8080
-   - **Initial Delay** : 5 secondes
-   - **Period** : 5 secondes
-   - **Timeout** : 1 seconde
-   - **Failure Threshold** : 3 échecs
-3. Enregistrez les modifications.
+### Étape 2 : Ajouter les Probes via la Console OpenShift
 
-Avec cette configuration, OpenShift n’enverra le trafic au conteneur que lorsque la readiness probe indique que le conteneur est prêt. 
+1. **Accédez à votre projet dans la console OpenShift**.
 
-### Explications
-- **Readiness Probe** vérifie que le conteneur peut recevoir des requêtes, par exemple, après un temps d'initialisation prolongé.
+2. **Ouvrez la section "Workloads" > "Deployments"** et sélectionnez votre application `probes-app`.
 
-## Etape 4 : Tester les sondes
+3. Dans l’onglet **Actions**, sélectionnez **Edit Health Checks** pour ajouter des sondes de readiness et de liveness.
 
-### 4.1. Test de la **Readiness Probe**
-Pour simuler un déploiement sans interruption, mettez à jour l'image avec une nouvelle version :
+4. **Ajoutez une liveness probe** :
+   - Type : HTTP
+   - Path : `/healthz`
+   - Port : `8080`
+   - Initial Delay : `10` secondes
+   - Timeout : `1` seconde
+   - Period : `5` secondes
+   - Failure Threshold : `3`
 
-```yaml
-image: node:16
-```
+![liveness probe](./images/liveness-probe.png)
 
-Observez la transition dans le tableau de bord OpenShift ; la readiness probe empêche le basculement vers le nouveau pod jusqu'à ce qu’il soit prêt.
+5. **Ajoutez une readiness probe** :
+   - Type : HTTP
+   - Path : `/readyz`
+   - Port : `8080`
+   - Initial Delay : `5` secondes
+   - Timeout : `1` seconde
+   - Period : `5` secondes
+   - Failure Threshold : `3`
 
-### 4.2. Test de la **Liveness Probe**
-Simulez un échec de liveness probe en modifiant le chemin de la sonde sur `/fail` :
+![readiness probe](./images/readiness-probe.png)
 
-```yaml
-livenessProbe:
-  httpGet:
-    path: /fail
-    port: 8080
-```
+6. **Enregistrez les modifications** pour que les probes soient ajoutées à la configuration de déploiement.
 
-Déployez les modifications :
-```bash
-oc apply -f demo-deployment.yaml
-```
 
-Observez les événements dans le tableau de bord : OpenShift détecte l’échec et redémarre le conteneur plusieurs fois jusqu'à atteindre le seuil de défaillance.
+### Étape 3 : Tester la Readiness Probe avec `oc rsh`
 
-## Nettoyage
-Pour nettoyer votre environnement, supprimez le déploiement :
+1. **Désactivez la Readiness Probe** :
+   Accédez au pod `probes-app` en utilisant `oc rsh` et exécutez la commande suivante pour désactiver la readiness :
+   ```bash
+   oc rsh probes-app
+   curl http://localhost:8080/toggle-ready
+   ```
 
-```bash
-oc delete deployment demo-app
-```
+   Cette commande rendra le pod "non prêt" en modifiant l’état de la readiness probe.
 
-## Conclusion
-Cet exercice vous a permis d'implémenter des sondes de santé pour surveiller l'état d'une application. En utilisant des sondes de **liveness** et **readiness**, OpenShift est capable de redémarrer automatiquement les conteneurs en cas de défaillance et de gérer le trafic pour garantir une disponibilité continue.
+2. **Vérifiez l’État de Readiness en Local** :
+   Toujours à partir du même shell, exécutez la commande suivante pour vérifier la disponibilité du endpoint de readiness sur `localhost` :
+   ```bash
+   curl http://localhost:8080/readyz
+   ```
+
+   Si la readiness probe est correctement configurée pour échouer, vous devriez recevoir une erreur indiquant que le pod n'est pas en état de readiness.
+
+3. **Observez les Événements dans la Console** :
+   - Retournez dans la console OpenShift, ouvrez la page de votre pod `probes-app`, et consultez l'onglet **Overview** ou **Events**.
+   - Vous devriez voir que le pod a été marqué comme "Non Prêt" et que le service a donc arrêté de router le trafic vers celui-ci.
+
+4. **Réactivez la Readiness Probe** :
+   Dans le même shell, exécutez cette commande pour réactiver la readiness :
+   ```bash
+   curl http://localhost:8080/toggle-ready
+   ```
+
+5. **Vérifiez que le Pod est à Nouveau Prêt** :
+   Exécutez de nouveau :
+   ```bash
+   curl http://localhost:8080/readyz
+   ```
+   
+   Cette fois, le endpoint devrait répondre avec `200 OK`, indiquant que le pod est prêt à recevoir du trafic.
+
+
+
+### Étape 4 : Tester la Liveness Probe
+
+1. **Désactivez la liveness probe** :
+   Dans le pod `probes-app`, exécutez la commande suivante pour simuler une défaillance de liveness :
+   ```bash
+   curl http://localhost:8080/toggle-live
+   ```
+
+2. **Observez le redémarrage du pod dans OpenShift** :
+   - Ouvrez la console OpenShift, allez dans **Workloads > Pods** et cliquez sur le pod `probes-app`.
+   - Allez dans l’onglet **Events** et observez les événements de redémarrage. OpenShift va tenter de redémarrer le conteneur après quelques secondes, une fois le seuil d’échec atteint.
+
+3. **Réactivez la liveness probe** pour éviter les redémarrages continus :
+   Retournez dans le pod `probes-app` et exécutez :
+   ```bash
+   curl http://localhost:8080/toggle-live
+   ```
+
+---
+
+### Résumé
+
+Dans cet exercice, vous avez pu observer :
+- **Readiness Probe** : comment OpenShift empêche le trafic d’atteindre le pod quand la readiness probe échoue.
+- **Liveness Probe** : comment OpenShift redémarre automatiquement le conteneur lorsque la liveness probe échoue, garantissant la résilience de l’application.
+
+Ces sondes jouent un rôle crucial pour maintenir des applications fiables et robustes sur OpenShift.
