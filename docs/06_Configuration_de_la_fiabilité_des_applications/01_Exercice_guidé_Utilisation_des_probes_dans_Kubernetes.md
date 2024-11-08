@@ -1,4 +1,4 @@
-### Exercice Guidé : Comprendre l'Utilité des Readiness et Liveness Probes dans OpenShift
+# Exercice Guidé : Comprendre l'Utilité des Readiness et Liveness Probes dans OpenShift
 
 Cet exercice vous guidera à travers le déploiement d'une application sur OpenShift, l'ajout de sondes de readiness et liveness via la console OpenShift, puis la simulation de défaillances pour observer leur comportement respectif. 
 
@@ -10,13 +10,6 @@ Cet exercice vise à démontrer :
 1. Comment une **readiness probe** empêche le trafic d'atteindre un conteneur non prêt.
 2. Comment une **liveness probe** redémarre un conteneur en cas de problème.
 
-### Prérequis
-
-- Accès à un cluster OpenShift.
-- Compte utilisateur avec les autorisations nécessaires pour déployer des applications et configurer des sondes.
-- `oc` CLI installé et configuré pour se connecter à votre cluster OpenShift.
-
----
 
 ### Étape 1 : Déploiement de l’Application
 
@@ -39,7 +32,7 @@ Cet exercice vise à démontrer :
        spec:
          containers:
          - name: probes-app
-           image: your-registry/probes-app:probes
+           image: quay.io/neutron-it/probes-app:latest
            ports:
            - containerPort: 8080
    ```
