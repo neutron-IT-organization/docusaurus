@@ -55,7 +55,7 @@ Cet exercice vise à démontrer :
 
 2. **Ouvrez la section "Workloads" > "Deployments"** et sélectionnez votre application `probes-app`.
 
-3. Dans l’onglet **Actions**, sélectionnez **Edit Health Checks** pour ajouter des sondes de readiness et de liveness.
+3. Dans l’onglet **Actions**, sélectionnez **Add Health Checks** pour ajouter des sondes de readiness et de liveness.
 
 4. **Ajoutez une liveness probe** :
    - Type : HTTP
@@ -87,6 +87,7 @@ Cet exercice vise à démontrer :
 1. **Désactivez la Readiness Probe** :
    Accédez au pod `probes-app` en utilisant `oc rsh` et exécutez la commande suivante pour désactiver la readiness :
    ```bash
+   oc rsh <nom_du_pod_demo-app> #get it with "oc get po"
    oc rsh probes-app
    curl http://localhost:8080/toggle-ready
    ```
@@ -105,6 +106,8 @@ Cet exercice vise à démontrer :
    - Retournez dans la console OpenShift, ouvrez la page de votre pod `probes-app`, et consultez l'onglet **Overview** ou **Events**.
    - Vous devriez voir que le pod a été marqué comme "Non Prêt" et que le service a donc arrêté de router le trafic vers celui-ci.
 
+   ![readiness probe events](./images/not-ready-event.png)
+
 4. **Réactivez la Readiness Probe** :
    Dans le même shell, exécutez cette commande pour réactiver la readiness :
    ```bash
@@ -119,6 +122,8 @@ Cet exercice vise à démontrer :
    
    Cette fois, le endpoint devrait répondre avec `200 OK`, indiquant que le pod est prêt à recevoir du trafic.
 
+   
+
 
 
 ### Étape 4 : Tester la Liveness Probe
@@ -130,7 +135,6 @@ Cet exercice vise à démontrer :
    ```
 
 2. **Observez le redémarrage du pod dans OpenShift** :
-   - Ouvrez la console OpenShift, allez dans **Workloads > Pods** et cliquez sur le pod `probes-app`.
    - Allez dans l’onglet **Events** et observez les événements de redémarrage. OpenShift va tenter de redémarrer le conteneur après quelques secondes, une fois le seuil d’échec atteint.
 
 3. **Réactivez la liveness probe** pour éviter les redémarrages continus :
@@ -138,6 +142,8 @@ Cet exercice vise à démontrer :
    ```bash
    curl http://localhost:8080/toggle-live
    ```
+
+    ![liveness probe events](./images/not-lived-event.png)
 
 ---
 
