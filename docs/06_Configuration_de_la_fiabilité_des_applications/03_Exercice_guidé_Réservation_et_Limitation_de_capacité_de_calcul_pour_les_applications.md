@@ -122,11 +122,48 @@ Cet exercice vous guidera dans la configuration et la gestion des **requests**, 
    oc get events -n YOURCITY-user-ns
    ```
 
+Voici les détails ajoutés à l'étape 3 pour expliquer ce que vous êtes censé observer dans les événements lorsque le quota est dépassé :  
+
+---
+
+## **Étape 3 : Tester le Dépassement du Quota**
+
+1. Essayez de scaler le déploiement pour augmenter le nombre de répliques :  
+
+   ```bash
+   oc scale deployment/test-limite --replicas=4 -n YOURCITY-user-ns
+   ```
+
+2. Vérifiez les événements générés par OpenShift :  
+
+   ```bash
+   oc get events -n YOURCITY-user-ns
+   ```
+
+   ### **Ce que vous devriez observer :**
+   - Un événement indiquant que le quota est atteint.  
+   - Exemple de message typique dans les événements :  
+
+     ```
+     Warning  FailedCreate  1m  replicaset-controller  Failed to create pod: exceeded quota: quota-cpu-memoire, requested: requests.cpu=500m, used: requests.cpu=1, limited: requests.cpu=1
+     ```
+
+     **Décryptage du message :**  
+     - **`FailedCreate`** : OpenShift n’a pas pu créer de nouveaux pods.  
+     - **`exceeded quota: quota-cpu-memoire`** : Le quota nommé `quota-cpu-memoire` a été dépassé.  
+     - **`requested: requests.cpu=500m`** : Le déploiement a tenté de demander 500 millicores supplémentaires pour une nouvelle réplique.  
+     - **`used: requests.cpu=1`** : Les ressources CPU actuellement utilisées dans le namespace sont déjà au maximum de 1 CPU.  
+     - **`limited: requests.cpu=1`** : Le quota autorise au maximum 1 CPU pour les demandes (requests).  
+     
+
+Avec cette explication, les utilisateurs sauront interpréter les messages des événements et comprendre pourquoi le quota empêche la montée en charge du déploiement.
+
 3. Retournez au déploiement d’une réplique pour éviter les problèmes persistants :  
 
    ```bash
-   oc scale deployment/test-limite --replicas=1 -n YOURCITY-user-ns
-   ```
+   oc scale deployment/test-limite --replicas=8 -n YOURCITY-user-ns
+   ``
+
 
 ---
 
