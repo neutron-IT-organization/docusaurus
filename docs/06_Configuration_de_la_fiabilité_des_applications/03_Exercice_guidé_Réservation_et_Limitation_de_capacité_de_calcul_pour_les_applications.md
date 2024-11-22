@@ -1,208 +1,182 @@
-# Exercice Guidé : Gestion des Requests, Limites et Quotas dans OpenShift
-
-Cet exercice vous guidera dans la configuration et la gestion des requests, des limites et des quotas pour des pods dans un projet OpenShift. Vous apprendrez à définir ces paramètres et à observer leur impact sur les ressources disponibles dans le cluster.
+Voici une version mise à jour de l'exercice avec vos nouvelles exigences : 
 
 ---
 
-#### Objectifs de l'Exercice
+# **Exercice Guidé : Gestion des Requests, Limites et Quotas dans OpenShift**
 
-1. **Configurer les requests et les limites** pour des pods dans un projet OpenShift.
-2. **Définir un quota de ressources** pour restreindre l’utilisation globale des ressources par le projet.
-3. **Observer l’impact des requests et des limites** sur la planification et l'exécution des pods.
-4. **Simuler un dépassement de quota** pour voir comment OpenShift limite la création de nouveaux pods.
+Cet exercice vous guidera dans la configuration et la gestion des **requests**, **limites** et **quotas** pour un déploiement dans un projet OpenShift. Vous apprendrez à configurer ces paramètres, à tester les limites et à observer l'utilisation réelle des ressources par rapport aux quotas définis.
 
 ---
 
-### Pré-requis
+## **Objectifs de l'exercice**
 
-- Accès à un cluster OpenShift avec des droits d’administrateur.
-- CLI OpenShift (`oc`) installée et connectée à votre cluster.
-
-### Étape 1 : Création d'un Projet
-
-Commencez par créer un nouveau projet dans OpenShift pour isoler vos ressources.
-
-```bash
-oc new-project gestion-ressources
-```
+1. Configurer les **requests** et **limites** pour un déploiement dans OpenShift.  
+2. Définir un **quota de ressources** pour restreindre la consommation globale des ressources.  
+3. Tester le comportement d'OpenShift lorsque le quota est atteint en essayant de scaler un déploiement.  
+4. Analyser les consommations via les quotas en observant les statuts des ressources consommées (**used** vs **hard**).  
 
 ---
 
-### Étape 2 : Créer un Pod avec Requests et Limites
+## **Étape 1 : Créer un Déploiement avec Requests et Limites**
 
-Dans cette étape, vous allez créer un fichier YAML définissant un pod avec des requests et des limites pour le CPU et la mémoire.
-
-1. Créez un fichier nommé `pod-limite.yaml` et ajoutez-y la configuration suivante :
+1. Créez un fichier nommé `deployment-limite.yaml` avec la configuration suivante :  
 
    ```yaml
-   apiVersion: v1
-   kind: Pod
+   apiVersion: apps/v1
+   kind: Deployment
    metadata:
-     name: pod-limite-exemple
-     labels:
-       app: test-limite
+     name: test-limite
+     namespace: YOURCITY-user-ns
    spec:
-     containers:
-     - name: limite-container
-       image: busybox
-       command: ["sh", "-c", "while true; do echo Hello OpenShift; sleep 5; done"]
-       resources:
-         requests:
-           memory: "128Mi"
-           cpu: "250m"
-         limits:
-           memory: "256Mi"
-           cpu: "500m"
+     replicas: 1
+     selector:
+       matchLabels:
+         app: test-limite
+     template:
+       metadata:
+         labels:
+           app: test-limite
+       spec:
+         containers:
+         - name: limite-container
+           image: registry.redhat.io/ubi8/ubi:latest
+           command: ["sh", "-c", "while true; do echo Hello OpenShift; sleep 5; done"]
+           resources:
+             requests:
+               memory: "128Mi"
+               cpu: "250m"
+             limits:
+               memory: "256Mi"
+               cpu: "500m"
    ```
 
-   Dans ce fichier :
-   - **Request de mémoire** : 128 Mi
-   - **Limite de mémoire** : 256 Mi
-   - **Request de CPU** : 250 m (soit 0.25 CPU)
-   - **Limite de CPU** : 500 m (soit 0.5 CPU)
+   **Explications** :  
+   - **Image utilisée** : `registry.redhat.io/ubi8/ubi:latest` (catalogue Red Hat).  
+   - Requests et limites configurées :  
+     - CPU : **250m** à **500m**  
+     - Mémoire : **128Mi** à **256Mi**
 
-2. Déployez le pod dans le projet `gestion-ressources` :
+2. Appliquez le déploiement :  
 
    ```bash
-   oc apply -f pod-limite.yaml -n gestion-ressources
+   oc apply -f deployment-limite.yaml -n YOURCITY-user-ns
    ```
 
-3. Vérifiez que le pod a été déployé avec succès :
+3. Vérifiez que le déploiement a été créé et que le pod est en cours d’exécution :  
 
    ```bash
-   oc get pods -n gestion-ressources
+   oc get pods -n YOURCITY-user-ns
    ```
 
-4. Pour consulter les requests et limites appliquées, exécutez la commande suivante :
+4. Consultez les **requests** et **limites** appliquées au pod avec :  
 
    ```bash
-   oc describe pod pod-limite-exemple -n gestion-ressources
+   oc describe pod -l app=test-limite -n YOURCITY-user-ns
    ```
-
-   Vérifiez les sections **Requests** et **Limits** dans la description du pod pour confirmer la configuration.
 
 ---
 
-### Étape 3 : Créer un Quota de Ressources pour le Projet
+## **Étape 2 : Configurer un Quota de Ressources**
 
-Maintenant que nous avons configuré les requests et les limites pour un pod, ajoutons un quota de ressources pour limiter la consommation globale des ressources dans le projet.
-
-1. Créez un fichier nommé `quota.yaml` avec la configuration suivante :
+1. Créez un fichier `quota.yaml` pour définir un quota de ressources :  
 
    ```yaml
    apiVersion: v1
    kind: ResourceQuota
    metadata:
      name: quota-cpu-memoire
-     namespace: gestion-ressources
+     namespace: YOURCITY-user-ns
    spec:
      hard:
-       requests.cpu: "1"           # Limite totale de requests CPU à 1 CPU
-       requests.memory: "512Mi"     # Limite totale de requests mémoire à 512 Mi
-       limits.cpu: "2"              # Limite totale de CPU pour le projet
-       limits.memory: "1Gi"         # Limite totale de mémoire pour le projet
+       requests.cpu: "1"            # Limite totale des demandes CPU à 1 CPU
+       requests.memory: "512Mi"     # Limite totale des demandes mémoire à 512 Mi
+       limits.cpu: "2"              # Limite totale des limites CPU à 2 CPU
+       limits.memory: "1Gi"         # Limite totale des limites mémoire à 1 Gi
    ```
 
-   Ce quota limite :
-   - La demande totale de CPU à **1 CPU**.
-   - La demande totale de mémoire à **512 Mi**.
-   - La limite totale de CPU à **2 CPU**.
-   - La limite totale de mémoire à **1 Gi**.
-
-2. Appliquez le quota au projet `gestion-ressources` :
+2. Appliquez le quota :  
 
    ```bash
-   oc apply -f quota.yaml -n gestion-ressources
+   oc apply -f quota.yaml -n YOURCITY-user-ns
    ```
 
-3. Vérifiez que le quota a été configuré :
+3. Vérifiez que le quota est bien configuré :  
 
    ```bash
-   oc describe resourcequota quota-cpu-memoire -n gestion-ressources
+   oc describe resourcequota quota-cpu-memoire -n YOURCITY-user-ns
    ```
 
 ---
 
-### Étape 4 : Test de la Limite de Quota
+## **Étape 3 : Tester le Dépassement du Quota**
 
-Nous allons maintenant tester les effets du quota en essayant de déployer plusieurs pods avec des requests et des limites de ressources proches de la limite définie.
-
-1. Créez un fichier `pod-multiple.yaml` avec la configuration suivante pour déployer un pod similaire au précédent mais nommé différemment :
-
-   ```yaml
-   apiVersion: v1
-   kind: Pod
-   metadata:
-     name: pod-limite-exemple-2
-     labels:
-       app: test-limite
-   spec:
-     containers:
-     - name: limite-container
-       image: busybox
-       command: ["sh", "-c", "while true; do echo Hello OpenShift; sleep 5; done"]
-       resources:
-         requests:
-           memory: "256Mi"
-           cpu: "500m"
-         limits:
-           memory: "512Mi"
-           cpu: "1"
-   ```
-
-2. Essayez de déployer ce pod dans le même projet :
+1. Essayez de scaler le déploiement au-delà des quotas. Modifiez le nombre de répliques avec :  
 
    ```bash
-   oc apply -f pod-multiple.yaml -n gestion-ressources
+   oc scale deployment/test-limite --replicas=4 -n YOURCITY-user-ns
    ```
 
-   Cette configuration dépassera le quota de requests de CPU et de mémoire, car le premier pod consomme déjà des ressources proches des limites.
-
-3. Vérifiez que le pod n'a pas pu être déployé en raison du quota. Pour cela, exécutez :
+2. Observez les événements pour comprendre pourquoi OpenShift refuse de scaler :  
 
    ```bash
-   oc get events -n gestion-ressources
+   oc get events -n YOURCITY-user-ns
    ```
 
-   Dans les événements, vous devriez voir une erreur indiquant que le quota de ressources a été dépassé.
+3. Retournez au déploiement d’une réplique pour éviter les problèmes persistants :  
+
+   ```bash
+   oc scale deployment/test-limite --replicas=1 -n YOURCITY-user-ns
+   ```
 
 ---
 
-### Étape 5 : Analyse des Consommations de Ressources
+## **Étape 4 : Analyser les Consommations des Quotas**
 
-OpenShift permet de surveiller l’utilisation des ressources et d’ajuster les configurations si nécessaire.
-
-1. Pour consulter l'état actuel de l'utilisation des ressources par rapport au quota, exécutez :
+1. Vérifiez les consommations actuelles des quotas avec :  
 
    ```bash
-   oc describe quota quota-cpu-memoire -n gestion-ressources
+   oc describe resourcequota quota-cpu-memoire -n YOURCITY-user-ns
    ```
 
-   Cette commande affiche l’état de chaque request et limite, ainsi que l’utilisation actuelle des ressources dans le projet.
+   **Analyse des résultats** :  
+   - **Used** : Les ressources actuellement consommées dans le namespace.  
+   - **Hard** : Les limites totales définies par le quota.  
 
-2. Pour vérifier l’utilisation de chaque pod, vous pouvez également utiliser :
+   Par exemple :  
+
+   ```
+   Resource              Used   Hard
+   --------              ----   ----
+   requests.cpu          500m   1
+   requests.memory       256Mi  512Mi
+   limits.cpu            1      2
+   limits.memory         512Mi  1Gi
+   ```
+
+2. Pour surveiller les ressources consommées par chaque pod :  
 
    ```bash
-   oc adm top pod -n gestion-ressources
+   oc adm top pod -n YOURCITY-user-ns
    ```
-
-   **Note** : La commande `oc adm top` nécessite l’outil `metrics-server` dans le cluster pour fournir des données de consommation en temps réel.
 
 ---
 
-### Étape 6 : Nettoyage de l'Environnement
+## **Étape 5 : Nettoyer l'Environnement**
 
-Une fois l’exercice terminé, vous pouvez supprimer les ressources créées pour libérer les ressources du cluster.
+Pour supprimer les ressources créées :  
 
 ```bash
-oc delete pod pod-limite-exemple -n gestion-ressources
-oc delete pod pod-limite-exemple-2 -n gestion-ressources
-oc delete resourcequota quota-cpu-memoire -n gestion-ressources
-oc delete project gestion-ressources
+oc delete deployment test-limite -n YOURCITY-user-ns
+oc delete resourcequota quota-cpu-memoire -n YOURCITY-user-ns
 ```
 
 ---
 
-### Conclusion
+## **Conclusion**
 
-Dans cet exercice, vous avez appris à configurer des requests, des limites et des quotas de ressources dans OpenShift. Vous avez également vu comment OpenShift applique ces limites pour contrôler la planification et l’utilisation des ressources dans un projet. Ces concepts sont cruciaux pour optimiser l’utilisation des ressources dans un environnement OpenShift partagé, garantissant ainsi un environnement de production stable et équilibré.
+Dans cet exercice, vous avez appris à :  
+1. Configurer les requests et limites pour un déploiement.  
+2. Définir et appliquer des quotas pour contrôler la consommation globale des ressources.  
+3. Tester les quotas en scalant un déploiement et analyser les statuts avec `oc get quotas`.  
+
+**Astuce** : En production, surveillez toujours les sections **used** et **hard** des quotas pour garantir une gestion optimale des ressources dans vos projets OpenShift.
