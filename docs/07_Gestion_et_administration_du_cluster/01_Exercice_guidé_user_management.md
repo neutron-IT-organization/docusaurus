@@ -1,12 +1,8 @@
-Voici l'exercice guidé pour accompagner la théorie sur la gestion des autorisations avec RBAC dans OpenShift :
-
----
-
-# **Exercice Guidé : Gestion des Rôles et Role Bindings dans OpenShift**
+# Exercice Guidé : Gestion des Rôles et Role Bindings dans OpenShift*
 
 Cet exercice vous guidera dans la configuration et la gestion des rôles et **role bindings** dans un cluster OpenShift. Vous apprendrez à attribuer des rôles aux utilisateurs, à tester les accès et à analyser les autorisations appliquées.
 
----
+
 
 ## **Objectifs de l'exercice**
 
@@ -15,7 +11,7 @@ Cet exercice vous guidera dans la configuration et la gestion des rôles et **ro
 3. Tester l’accès d’un utilisateur en fonction des rôles attribués.
 4. Analyser les autorisations d'un utilisateur avec les outils d’OpenShift.
 
----
+
 
 ## **Étape 1 : Créer un Rôle Local**
 
@@ -86,7 +82,6 @@ Cet exercice vous guidera dans la configuration et la gestion des rôles et **ro
    oc describe rolebinding viewer-binding -n YOURCITY-user-ns
    ```
 
----
 
 ## **Étape 3 : Créer un Rôle de Cluster**
 
@@ -118,7 +113,6 @@ Cet exercice vous guidera dans la configuration et la gestion des rôles et **ro
    oc describe clusterrole project-lister
    ```
 
----
 
 ## **Étape 4 : Créer un Cluster Role Binding**
 
@@ -154,7 +148,6 @@ Cet exercice vous guidera dans la configuration et la gestion des rôles et **ro
    oc describe clusterrolebinding project-lister-binding
    ```
 
----
 
 ## **Étape 5 : Tester les Autorisations d'un Utilisateur**
 
@@ -188,7 +181,6 @@ Cet exercice vous guidera dans la configuration et la gestion des rôles et **ro
    **Ce que vous devriez voir** :  
    - L'utilisateur **user2** devrait pouvoir lister les namespaces, car il a le rôle **project-lister**.
 
----
 
 ## **Étape 6 : Analyser les Autorisations**
 
@@ -204,8 +196,6 @@ Cet exercice vous guidera dans la configuration et la gestion des rôles et **ro
    oc describe clusterrolebinding project-lister-binding
    ```
 
----
-
 ## **Étape 7 : Nettoyer l'Environnement**
 
 Pour supprimer les ressources créées :
@@ -216,8 +206,6 @@ oc delete rolebinding viewer-binding -n YOURCITY-user-ns
 oc delete clusterrole project-lister
 oc delete clusterrolebinding project-lister-binding
 ```
-
----
 
 ## **Conclusion**
 
