@@ -1,5 +1,5 @@
 {
-  "label": "Gestion de la mise a jour des application",
+  "label": "Administration du Cluster Openshift",
   "position": 9,
   "link": {
     "type": "generated-index",

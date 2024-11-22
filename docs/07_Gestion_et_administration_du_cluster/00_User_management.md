@@ -106,7 +106,7 @@ OpenShift distingue différents types d’utilisateurs :
 
 - **Comptes de service** : Utilisés par les applications pour interagir avec l'API Kubernetes. Ces comptes n'ont pas de rôle par défaut, mais ils peuvent en recevoir un pour permettre à l'application d'exécuter des actions spécifiques.
 
-![Role RoleBindinf User SA](./images/RBAC-in-Openshift.png)
+
 ![RBAC in Opnehshift](./images/RBAC-in-Openshift.svg)
 
 ## Conclusion
