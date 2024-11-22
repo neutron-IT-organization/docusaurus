@@ -143,8 +143,6 @@ Cet exercice vise à démontrer :
    curl http://localhost:8080/toggle-live
    ```
 
-    ![liveness probe events](./images/not-lived-event.png)
-
 ---
 
 ### Résumé
