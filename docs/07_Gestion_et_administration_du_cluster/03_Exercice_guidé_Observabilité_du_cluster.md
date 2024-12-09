@@ -1,4 +1,4 @@
-# Exercice Guidé : Découvrir les Dashboards dans OpenShift Observe avec une Alerte sur les Pods Non Prêts
+# Exercice Guidé : Découvrir les Dashboards et les Alertes dans OpenShift Observe
 
 Cet exercice vous permet d'explorer les fonctionnalités de monitoring d'OpenShift via les dashboards dans l'onglet **Observe**. Vous allez configurer une alerte personnalisée détectant les pods dans l'état `Failed`, `Pending`, ou `Unknown`, tester cette alerte en déclenchant un échec de pod, et la résoudre.
 
