@@ -83,24 +83,29 @@ Pour vérifier que la règle est appliqué, rendez-vous dans Observe>Alerting>Al
    Ce pod passera immédiatement dans l’état `Failed`.
 
 
-## Étape 3 : Explorer les Dashboards dans OpenShift
+## Étape 3 : Explorer les Alertes dans OpenShift
 
-1. **Accéder à l’interface Observe** :
-   - Connectez-vous à la console OpenShift.
-   - Naviguez vers **Observe > Dashboards**.
+1. **Accéder à l’interface Observe** :  
+   - Connectez-vous à la console OpenShift.  
+   - Naviguez directement vers **Observe > Alerts**.  
 
-2. **Filtrer par namespace** :
-   - Sélectionnez les dashboards **Kubernetes / Pods**.
-   - Filtrez pour afficher uniquement les pods du namespace `YOURCITY-user-ns`.
+2. **Rechercher l'alerte déclenchée** :  
+   - Recherchez l’alerte **YOURCITY-OpenshiftPodNotHealthy** dans la liste des alertes actives.  
+   - Cliquez sur l'alerte pour afficher ses détails, notamment :  
+     - Le pod concerné (`failed-pod-demo`).  
+     - Les annotations configurées, comme le résumé et la description.  
 
-3. **Examiner les métriques** :
-   - Vérifiez l’état des pods.
-   - Confirmez que le pod `failed-pod-demo` est marqué comme `Failed`.
+![Prague alerting rule in dashboard](./images/rule-in-dashboard.png)     
 
-4. **Vérifier les alertes** :
-   - Naviguez vers **Observe > Alerts**.
-   - Recherchez l’alerte **KubernetesPodNotHealthy**.
-   - Cliquez sur l'alerte pour voir ses détails, comme le pod concerné et les annotations configurées.
+3. **Analyser les détails de l’alerte** :  
+   - Observez le **namespace** et le **pod** liés à l’alerte.  
+   - Confirmez que l’état du pod `failed-pod-demo` a bien provoqué l'alerte.  
+
+4. **Interpréter les informations** :  
+   - Prenez note des valeurs affichées pour comprendre pourquoi l’alerte a été déclenchée.  
+   - Identifiez les actions nécessaires pour résoudre cette alerte.  
+
+![rule full view](./images/rule-full-view.png)
 
 
 ## Étape 4 : Résoudre l'Alerte
@@ -113,7 +118,29 @@ oc delete pod -n YOURCITY-user-ns failed-pod-demo
 
 Revenez dans l’onglet **Alerts** pour confirmer que l’alerte a disparu.
 
-## Étape 5 : Nettoyage
+
+## Étape 5 : Explorer les Dashboards pour une Vue d’Ensemble des Pods et du Cluster
+
+1. **Accéder aux Dashboards de Monitoring** :  
+   - Toujours dans la console OpenShift, naviguez vers **Observe > Dashboards**.
+
+2. **Découvrir différentes vues** :  
+   Explorez les sections suivantes pour mieux comprendre l’état et le comportement de vos pods et du cluster :  
+   - **Kubernetes / Compute Resources / Pod** :  
+     - Analysez l’utilisation des ressources (CPU, mémoire) pour les pods de votre namespace.  
+     - Filtrez pour le namespace `YOURCITY-user-ns` pour une vue spécifique à vos ressources.  
+
+![compute resources](./images/dashboard-resource-view.png)
+
+3. **Comprendre les graphiques et données** :  
+   - Passez votre souris sur les graphiques pour voir les valeurs exactes à un instant donné.  
+   - Interprétez les données affichées, comme les pics d’utilisation de ressources ou les baisses de connectivité réseau.
+
+4. **Réfléchir aux Applications Pratiques** :  
+   - Identifiez comment ces dashboards peuvent être utilisés pour surveiller en temps réel vos workloads.  
+   - Pensez à intégrer ces vues dans votre routine de gestion pour anticiper et résoudre rapidement les problèmes.  
+
+## Étape 6 : Nettoyage
 
 1. **Supprimez la règle d’alerte** :
 
