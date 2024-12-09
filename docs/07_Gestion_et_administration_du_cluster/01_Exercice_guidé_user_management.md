@@ -1,4 +1,4 @@
-# Exercice Guidé : Gestion des Rôles et Role Bindings dans OpenShift*
+# Exercice Guidé : Gestion des Rôles et Role Bindings dans OpenShift
 
 Cet exercice vous guidera dans la configuration et la gestion des rôles et **role bindings** dans un cluster OpenShift. Vous apprendrez à attribuer des rôles aux utilisateurs, à tester les accès et à analyser les autorisations appliquées.
 

@@ -37,7 +37,7 @@ De même, le tableau de bord des pods offre un aperçu de l’état des applicat
 
 Le tableau de bord du stockage complète cette vue en mettant en évidence l’utilisation des volumes persistants. Grâce à des graphiques clairs, les équipes peuvent suivre la consommation des volumes attachés aux applications, anticiper les saturations de stockage et planifier des extensions si nécessaire.
 
----
+![Openshift Monitoring](./images/Console-monitoring-openshift.png)
 
 ## Visualisation et Analyse des Métriques dans OpenShift
 
@@ -47,7 +47,9 @@ Prometheus fournit une interface native pour interroger les données collectées
 
 Ces capacités de visualisation et d’analyse permettent une prise de décision éclairée. Les administrateurs peuvent ainsi ajuster les ressources, modifier les configurations ou même repenser l’architecture des applications pour maximiser les performances.
 
----
+
+![Openshift Monitoring](./images/Openshift-Monitoring.svg)
+
 
 ## Conclusion
 
