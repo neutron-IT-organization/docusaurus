@@ -1,131 +1,130 @@
-# Exercice Guidé : Mise à Jour des Paramètres et de l'Image de l'Application
+# Exercice Guidé : Découvrir les Dashboards dans OpenShift Observe avec une Alerte sur les Pods Non Prêts
 
-Dans cet exercice guidé, nous allons pratiquer la mise à jour des paramètres et de l'image de l'application déployée dans OpenShift. Vous apprendrez à modifier le fichier de déploiement pour pointer vers une nouvelle version de l'image et à mettre à jour les variables d'environnement de l'application.
+Cet exercice vous permet d'explorer les fonctionnalités de monitoring d'OpenShift via les dashboards dans l'onglet **Observe**. Vous allez configurer une alerte personnalisée détectant les pods dans l'état `Failed`, `Pending`, ou `Unknown`, tester cette alerte en déclenchant un échec de pod, et la résoudre.
 
-## Objectifs de l'Exercice
 
-- Mettre à jour l'image d'une application.
-- Modifier les variables d'environnement de l'application.
-- Vérifier que les mises à jour ont été appliquées correctement.
+## Objectif
 
-## Prérequis
+À la fin de cet exercice, vous serez capable de :
+1. Configurer une règle d’alerte dans un namespace spécifique.
+2. Observer les dashboards dans OpenShift pour visualiser les métriques et alertes.
+3. Tester et résoudre une alerte en manipulant un pod défectueux.
 
-- Un cluster OpenShift fonctionnel.
-- Un déploiement existant de l'application que vous souhaitez mettre à jour.
 
-### Étape 1 : Mettre à Jour l'Image de l'Application
+## Étape 1 : Configurer une Règle d’Alerte Prometheus
 
-Tout d'abord, nous allons mettre à jour l'image de l'application. Supposons que nous avons une nouvelle version de l'image `my-app:v2.0` disponible dans notre registre.
+1. **Créer un fichier YAML pour la règle Prometheus** :
 
-1. **Ouvrez le fichier de déploiement YAML** de votre application. Par exemple, `deployment.yaml`.
-
-2. **Modifiez la section `image`** pour pointer vers la nouvelle version de l'image :
+   Sauvegardez le contenu suivant dans un fichier nommé `pod-not-ready-alert.yaml` :
 
    ```yaml
-   apiVersion: apps/v1
-   kind: Deployment
+   apiVersion: monitoring.coreos.com/v1
+   kind: PrometheusRule
    metadata:
-     name: my-app
+     name: kube-pod-not-ready
+     namespace: YOURCITY-user-ns
+     labels:
+       app: kube-prometheus-stack
    spec:
-     replicas: 3
-     selector:
-       matchLabels:
-         app: my-app
-     template:
-       metadata:
-         labels:
-           app: my-app
-       spec:
-         containers:
-         - name: my-app-container
-           image: my-registry.example.com/my-namespace/my-app:v2.0
-           ports:
-           - containerPort: 8080
+     groups:
+       - name: pod-readiness-rules
+         rules:
+           - alert: KubernetesPodNotHealthy
+             expr: sum by (namespace, pod) (kube_pod_status_phase{namespace="YOURCITY-user-ns", phase=~"Pending|Unknown|Failed"}) > 0
+             for: 1m
+             labels:
+               severity: critical
+             annotations:
+               summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is not healthy"
+               description: |
+                 The pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-running state for over 1 minute.
+                 VALUE = {{ $value }}
+                 LABELS = {{ $labels }}
    ```
 
-3. **Appliquez les modifications** en utilisant la commande `oc apply` :
+2. **Appliquer la règle dans le namespace `YOURCITY-user-ns`** :
 
    ```bash
-   oc apply -f deployment.yaml
+   oc apply -f pod-not-ready-alert.yaml
    ```
 
-4. **Vérifiez le déploiement** pour vous assurer que les nouveaux pods utilisent la nouvelle image :
 
-   ```bash
-   oc get pods
-   ```
+## Étape 2 : Déployer un Pod Défectueux
 
-5. **Décrivez le déploiement** pour vérifier l'image utilisée :
+1. **Créer un fichier YAML pour le pod défectueux** :
 
-   ```bash
-   oc describe deployment my-app
-   ```
-
-### Étape 2 : Mettre à Jour les Paramètres de l'Application
-
-Ensuite, nous allons mettre à jour les variables d'environnement de l'application.
-
-1. **Ouvrez le fichier de déploiement YAML** de votre application.
-
-2. **Ajoutez ou modifiez les variables d'environnement** dans la section `env` du conteneur. Par exemple :
+   Sauvegardez le contenu suivant dans un fichier nommé `failed-pod.yaml` :
 
    ```yaml
-   apiVersion: apps/v1
-   kind: Deployment
+   apiVersion: v1
+   kind: Pod
    metadata:
-     name: my-app
+     name: failed-pod-demo
+     namespace: YOURCITY-user-ns
    spec:
-     replicas: 3
-     selector:
-       matchLabels:
-         app: my-app
-     template:
-       metadata:
-         labels:
-           app: my-app
-       spec:
-         containers:
-         - name: my-app-container
-           image: my-registry.example.com/my-namespace/my-app:v2.0
-           ports:
-           - containerPort: 8080
-           env:
-           - name: DATABASE_URL
-             value: "postgres://user:password@hostname:5432/dbname"
-           - name: DEBUG
-             value: "true"
+     containers:
+       - name: failed-container
+         image: busybox
+         command: ["/bin/sh", "-c", "exit 1"]
+     restartPolicy: Never
    ```
 
-3. **Appliquez les modifications** comme précédemment :
+2. **Appliquer la configuration pour créer le pod** :
 
    ```bash
-   oc apply -f deployment.yaml
+   oc apply -f failed-pod.yaml
    ```
 
-4. **Vérifiez les modifications** en décrivant les pods pour confirmer les valeurs des variables d'environnement :
+   Ce pod passera immédiatement dans l’état `Failed`.
+
+
+## Étape 3 : Explorer les Dashboards dans OpenShift
+
+1. **Accéder à l’interface Observe** :
+   - Connectez-vous à la console OpenShift.
+   - Naviguez vers **Observe > Dashboards**.
+
+2. **Filtrer par namespace** :
+   - Sélectionnez les dashboards **Kubernetes / Pods**.
+   - Filtrez pour afficher uniquement les pods du namespace `YOURCITY-user-ns`.
+
+3. **Examiner les métriques** :
+   - Vérifiez l’état des pods.
+   - Confirmez que le pod `failed-pod-demo` est marqué comme `Failed`.
+
+4. **Vérifier les alertes** :
+   - Naviguez vers **Observe > Alerts**.
+   - Recherchez l’alerte **KubernetesPodNotHealthy**.
+   - Cliquez sur l'alerte pour voir ses détails, comme le pod concerné et les annotations configurées.
+
+
+## Étape 4 : Résoudre l'Alerte
+
+Pour lever l'alerte, supprimez le pod défectueux :
+
+```bash
+oc delete pod -n YOURCITY-user-ns failed-pod-demo
+```
+
+Revenez dans l’onglet **Alerts** pour confirmer que l’alerte a disparu.
+
+## Étape 5 : Nettoyage
+
+1. **Supprimez la règle d’alerte** :
 
    ```bash
-   oc describe pod <pod-name>
+   oc delete -f pod-not-ready-alert.yaml
    ```
 
-### Étape 3 : Vérification Finale
-
-Après avoir appliqué les modifications, il est crucial de vérifier que tout fonctionne comme prévu.
-
-1. **Obtenez la liste des pods** pour vérifier leur statut :
+2. **Supprimez les ressources restantes dans `YOURCITY-user-ns`** :
 
    ```bash
-   oc get pods
+   oc delete pod -n YOURCITY-user-ns failed-pod-demo --ignore-not-found
    ```
 
-2. **Consultez les journaux** des pods pour vous assurer qu'il n'y a pas d'erreurs liées aux nouvelles variables d'environnement ou à la nouvelle image :
+## Résultat Attendu
 
-   ```bash
-   oc logs <pod-name>
-   ```
-
-3. **Accédez à l'application** via son URL (si applicable) pour vérifier qu'elle fonctionne correctement avec les mises à jour appliquées.
-
-## Conclusion
-
-Dans cet exercice guidé, vous avez appris à mettre à jour l'image et les paramètres de l'application déployée dans OpenShift. En suivant ces étapes, vous pouvez assurer que vos applications fonctionnent toujours avec les dernières versions et configurations nécessaires.
+1. Vous avez configuré une règle Prometheus pour surveiller les pods non prêts dans le namespace `YOURCITY-user-ns`.
+2. Vous avez déployé un pod défectueux et confirmé que l’alerte s’est déclenchée.
+3. Vous avez exploré les dashboards pour analyser les métriques et les alertes.
+4. Vous avez résolu et nettoyé l’environnement.
