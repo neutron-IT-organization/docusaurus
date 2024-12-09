@@ -28,7 +28,7 @@ Cet exercice vous permet d'explorer les fonctionnalités de monitoring d'OpenShi
        - name: pod-readiness-rules
          rules:
            - alert: YOURCITY-OpenshiftPodNotHealthy
-             expr: sum by (namespace, pod) (kube_pod_status_phase{namespace="YOURCITY-user-ns", phase=~"Pending|Unknown|Failed"}) > 0
+             expr: sum by (namespace, pod) (kube_pod_status_phase{namespace="YOURCITY-user-ns", phase=~"Pending|Unknown|Failed|Error"}) > 0
              for: 1m
              labels:
                severity: critical
@@ -51,6 +51,8 @@ Cet exercice vous permet d'explorer les fonctionnalités de monitoring d'OpenShi
 Cette règle sera appliqué au bout d'environ quelques minutes (environ 5 minutes).
 
 Pour vérifier que la règle est appliqué, rendez-vous dans Observe>Alerting>Alerting rules et cherchez OpenshiftPodNotHealthy dans les filtres.
+
+![Prague alerting rule](./images/prague-alerting-rule.png)
 
 ## Étape 2 : Déployer un Pod Défectueux
 
