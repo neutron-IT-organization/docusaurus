@@ -21,15 +21,13 @@ Cet exercice vous permet d'explorer les fonctionnalités de monitoring d'OpenShi
    apiVersion: monitoring.coreos.com/v1
    kind: PrometheusRule
    metadata:
-     name: kube-pod-not-ready
-     namespace: YOURCITY-user-ns
-     labels:
-       app: kube-prometheus-stack
+     name: YOURCITY-kube-pod-not-ready
+     namespace: openshift-monitoring
    spec:
      groups:
        - name: pod-readiness-rules
          rules:
-           - alert: KubernetesPodNotHealthy
+           - alert: YOURCITY-OpenshiftPodNotHealthy
              expr: sum by (namespace, pod) (kube_pod_status_phase{namespace="YOURCITY-user-ns", phase=~"Pending|Unknown|Failed"}) > 0
              for: 1m
              labels:
@@ -42,12 +40,17 @@ Cet exercice vous permet d'explorer les fonctionnalités de monitoring d'OpenShi
                  LABELS = {{ $labels }}
    ```
 
+
+
 2. **Appliquer la règle dans le namespace `YOURCITY-user-ns`** :
 
    ```bash
    oc apply -f pod-not-ready-alert.yaml
    ```
 
+Cette règle sera appliqué au bout d'environ quelques minutes (environ 5 minutes).
+
+Pour vérifier que la règle est appliqué, rendez-vous dans Observe>Alerting>Alerting rules et cherchez OpenshiftPodNotHealthy dans les filtres.
 
 ## Étape 2 : Déployer un Pod Défectueux
 
