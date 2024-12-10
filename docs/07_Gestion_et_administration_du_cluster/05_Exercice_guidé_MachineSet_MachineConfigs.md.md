@@ -1,157 +1,102 @@
-# Exercice Guidé : Déploiement Automatique avec les ImageStreams dans OpenShift
+# Exercice Guidé : Exploration des Nœuds et MachineConfigs dans OpenShift
 
-Dans cet exercice guidé, nous allons apprendre à configurer et utiliser les ImageStreams pour déployer automatiquement des applications dans OpenShift lorsque de nouvelles versions d'images sont disponibles.
+Dans cet exercice, vous allez apprendre à explorer les nœuds et leurs configurations système dans OpenShift. Vous utiliserez la commande `oc debug` pour récupérer des informations détaillées sur un nœud et consulterez les MachineConfigs associées via la console OpenShift, sans les modifier.
 
 ## Objectifs de l'Exercice
 
-- Créer un ImageStream.
-- Configurer un déploiement automatique basé sur un ImageStream.
-- Mettre à jour l'ImageStream et observer le déploiement automatique.
+- Utiliser la commande `oc debug` pour examiner les nœuds du cluster.
+- Accéder aux MachineConfigs dans la console OpenShift pour comprendre leur rôle et leur contenu.
 
 ## Prérequis
 
 - Accès à un cluster OpenShift.
 - OpenShift CLI (`oc`) installé et configuré.
-- Un registre d'images Docker pour stocker les images de conteneur.
+- Un compte utilisateur disposant des droits d'administration sur le cluster.
+
 
 ## Étapes de l'Exercice
 
-### 1. Créer un Projet
+### 1. Identifier les Nœuds dans le Cluster
 
-Créez un nouveau projet pour cet exercice :
-
-```bash
-oc new-project demo-imagestream
-```
-
-### 2. Créer un ImageStream
-
-Créez un fichier YAML pour l'ImageStream nommé `imagestream.yaml` :
-
-```yaml
-apiVersion: image.openshift.io/v1
-kind: ImageStream
-metadata:
-  name: my-app
-  namespace: demo-imagestream
-```
-
-Appliquez ce fichier pour créer l'ImageStream :
+Pour commencer, obtenez une liste des nœuds disponibles dans votre cluster :
 
 ```bash
-oc apply -f imagestream.yaml
+oc get nodes
 ```
 
-### 3. Créer une Définition de Déploiement
+Vous devriez voir une sortie listant les nœuds, leur état (`Ready`, `Not Ready`, etc.), leur rôle (`master`, `worker`, etc.), et l’âge.
 
-Créez un fichier YAML pour le déploiement nommé `deployment.yaml` :
+### 2. Utiliser `oc debug` pour Examiner un Nœud
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: my-app-deployment
-  namespace: demo-imagestream
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: my-app
-  template:
-    metadata:
-      labels:
-        app: my-app
-    spec:
-      containers:
-      - name: my-app-container
-        image: image-registry.openshift-image-registry.svc:5000/demo-imagestream/my-app:latest
-        ports:
-        - containerPort: 8080
-  triggers:
-  - type: ImageChange
-    imageChangeParams:
-      automatic: true
-      containerNames:
-      - my-app-container
-      from:
-        kind: ImageStreamTag
-        name: my-app:latest
-```
-
-Appliquez ce fichier pour créer le déploiement :
+Choisissez un nœud parmi la liste et démarrez une session de débogage :
 
 ```bash
-oc apply -f deployment.yaml
+oc debug node/<node-name>
 ```
 
-### 4. Pousser une Image Initiale
+Remplacez `<node-name>` par le nom d’un nœud spécifique.
 
-Construisez et poussez une image initiale vers votre registre d'images Docker :
+1. **Explorez l’environnement de débogage** :
+   - Une fois connecté, vous serez placé dans un pod temporaire qui vous donne accès à l’espace utilisateur du nœud.
+   - Utilisez des commandes comme `ls`, `cat`, et `journalctl` pour explorer les fichiers et journaux du nœud.
+   - Par exemple, pour vérifier les logs système :
+     ```bash
+     chroot /host
+     journalctl -xe
+     ```
 
-```bash
-docker build -t my-registry.example.com/demo-imagestream/my-app:v1.0 .
-docker push my-registry.example.com/demo-imagestream/my-app:v1.0
-```
+2. **Récupérez des informations système** :
+   - Examinez la consommation des ressources :
+     ```bash
+     top
+     ```
+   - Vérifiez les partitions et l’espace disque :
+     ```bash
+     df -h
+     ```
 
-Mettez à jour l'ImageStreamTag `latest` pour pointer vers cette image :
+3. **Quittez la session** :
+   Une fois l’exploration terminée, quittez l’environnement de débogage en tapant `exit`.
 
-```bash
-oc tag demo-imagestream/my-app:v1.0 demo-imagestream/my-app:latest
-```
 
-### 5. Vérifier le Déploiement
+### 3. Accéder aux MachineConfigs via la Console OpenShift
 
-Vérifiez que le déploiement a été déclenché automatiquement :
+1. **Naviguer vers les MachineConfigs** :
+   - Connectez-vous à la console OpenShift.
+   - Dans le menu de gauche, cliquez sur **Compute** > **MachineConfigs**.
 
-```bash
-oc get deployments
-oc get pods
-```
+2. **Explorer les MachineConfigs** :
+   - Une fois sur la page des MachineConfigs, vous verrez une liste des configurations disponibles. Chaque MachineConfig est associée à un rôle spécifique (`master`, `worker`, etc.).
+   - Cliquez sur une MachineConfig pour afficher ses détails. Vous verrez :
+     - Le contenu YAML de la MachineConfig.
+     - Les nœuds ciblés via le label `machineconfiguration.openshift.io/role`.
+     - Les conditions indiquant si la MachineConfig a été appliquée avec succès.
 
-Obtenez les journaux des pods pour vous assurer qu'ils fonctionnent correctement :
+3. **Analyser une MachineConfig** :
+   - Identifiez une MachineConfig utilisée pour configurer un aspect spécifique, comme `99-worker-ssh`. Celle-ci peut, par exemple, gérer les clés SSH autorisées sur les nœuds workers.
+   - Observez comment les instructions sont définies dans la section `spec.config` :
+     ```yaml
+     apiVersion: machineconfiguration.openshift.io/v1
+     kind: MachineConfig
+     metadata:
+       name: 99-worker-ssh
+       labels:
+         machineconfiguration.openshift.io/role: worker
+     spec:
+       config:
+         ignition:
+           version: 3.2.0
+         passwd:
+           users:
+           - name: core
+             sshAuthorizedKeys:
+             - ssh-rsa AAAA...your-key
+     ```
 
-```bash
-oc logs <pod-name>
-```
+4. **Retournez à la liste principale** :
+   - Une fois l’analyse terminée, revenez à la vue principale en cliquant sur **Back to MachineConfigs**.
 
-### 6. Mettre à Jour l'Image
-
-Construisez et poussez une nouvelle version de l'image :
-
-```bash
-docker build -t my-registry.example.com/demo-imagestream/my-app:v2.0 .
-docker push my-registry.example.com/demo-imagestream/my-app:v2.0
-```
-
-Mettez à jour l'ImageStreamTag `latest` pour pointer vers la nouvelle image :
-
-```bash
-oc tag demo-imagestream/my-app:v2.0 demo-imagestream/my-app:latest
-```
-
-### 7. Observer le Déploiement Automatique
-
-Vérifiez que le déploiement automatique a été déclenché suite à la mise à jour de l'ImageStream :
-
-```bash
-oc get deployments
-oc get pods
-```
-
-Obtenez les journaux des nouveaux pods pour vous assurer qu'ils fonctionnent correctement :
-
-```bash
-oc logs <new-pod-name>
-```
-
-### 8. Nettoyage
-
-Pour nettoyer les ressources créées durant cet exercice :
-
-```bash
-oc delete project demo-imagestream
-```
 
 ## Conclusion
 
-Vous avez appris à configurer des déploiements automatiques dans OpenShift en utilisant les ImageStreams. En suivant cet exercice guidé, vous devriez maintenant être capable de créer, gérer et mettre à jour des déploiements basés sur des modifications d'images de conteneur. Cette fonctionnalité est cruciale pour maintenir des environnements de production à jour de manière automatisée et fiable.
+Grâce à cet exercice, vous avez appris à utiliser `oc debug` pour récupérer des informations critiques sur un nœud et à naviguer dans les MachineConfigs via la console OpenShift. Ces compétences sont essentielles pour diagnostiquer des problèmes, comprendre les configurations système et maintenir un cluster OpenShift en bonne santé sans affecter les charges de travail en production.
