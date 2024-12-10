@@ -30,16 +30,33 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
    Rendez-vous sur [HostingCanada Htpasswd Generator](https://hostingcanada.org/htpasswd-generator/).
 
 2. **Créer les Utilisateurs** :  
-   - Entrez `user1` comme nom d'utilisateur et définissez `password1` comme mot de passe.  
+   - Entrez `user1` comme nom d'utilisateur et définissez `password1` comme mot de passe. Cliquez sur "Create .htpasswd file". 
    - Copiez la ligne générée.  
    - Répétez l'opération pour `user2` avec le mot de passe `password2`.
 
-3. **Créer un Fichier `htpasswd` Localement** :  
-   À l'aide d'un éditeur de texte, collez les lignes générées pour les deux utilisateurs dans un fichier nommé `htpasswd-file`. Le contenu du fichier devrait ressembler à ceci :
+3. **Créer un Fichier `htpasswd` Localement avec `vi`** :  
+
+1. Ouvrez un fichier nommé `htpasswd-file` avec l'éditeur `vi` :  
+   ```bash
+   vi htpasswd-file
+   ```
+
+2. Une fois dans l'éditeur, appuyez sur la touche `i` pour entrer en mode insertion.
+
+3. Collez les lignes générées pour les deux utilisateurs (par exemple, depuis le site [HostingCanada Htpasswd Generator](https://hostingcanada.org/htpasswd-generator/)) :  
    ```
    user1:$2y$05$examplehash1examplehash2examplehash3
    user2:$2y$05$examplehash4examplehash5examplehash6
    ```
+
+4. Une fois les lignes ajoutées, appuyez sur la touche `ESC` pour quitter le mode insertion.
+
+5. Sauvegardez et quittez `vi` en tapant :  
+   ```
+   :wq
+   ```  
+
+Vous avez maintenant un fichier `htpasswd-file` contenant les identifiants des utilisateurs.
 
 4. **Uploader le Fichier dans OpenShift** :  
    Créez un secret contenant le fichier `htpasswd` :
