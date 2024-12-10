@@ -6,6 +6,7 @@ Dans OpenShift, la gestion des nœuds est une composante essentielle pour garant
 
 Les MachineSets permettent une gestion automatique du cycle de vie des machines qui composent un cluster, tandis que les MachineConfigs centralisent et standardisent les configurations système appliquées aux nœuds. Grâce à ces outils, OpenShift offre une flexibilité et une efficacité opérationnelle adaptées aux environnements modernes et complexes.
 
+![Node vs MachineSet vs MachineConfig](./images/Machine-in-openshift.svg) 
 
 ## Les Nœuds dans OpenShift : Fondations et Débogage
 
@@ -118,7 +119,7 @@ spec:
    ```
    Les nœuds concernés redémarreront et appliqueront les changements.
 
-![Node vs MachineSet vs MachineConfig](./images/Machine-in-openshift.svg) 
+![MachineConfig dashboard](./images/machineconfigs-dashboard.ong) 
 
 ## Gestion et Visualisation via la Console OpenShift : Détails et Navigation
 
@@ -144,6 +145,8 @@ La console OpenShift offre une interface utilisateur intuitive pour surveiller l
 3. **Fonctionnalités additionnelles** :
    - Vous pouvez étiqueter ou annoter les nœuds directement depuis la console pour faciliter leur identification.
    - La console permet également de lancer une commande de débogage pour un nœud spécifique via l’option **Debug Node**.
+
+![MachineConfig dashboard](./images/node-dashboard.ong) 
 
 ### Gestion des MachineSets et MachineConfigs
 
