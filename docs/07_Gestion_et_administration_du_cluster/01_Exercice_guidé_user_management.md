@@ -58,12 +58,8 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
    - Cliquez sur **Save** pour appliquer la configuration.
 
 ![Create htpasswd](./images/create-htpasswd.png)
+ 
 
-6. **Vérifier la Configuration** :  
-   - Une fois enregistré, vous devriez voir le fournisseur d’identité `htpasswd_provider` répertorié dans la section des Identity Providers.  
-   - Vérifiez également que la connexion des utilisateurs via ce fournisseur fonctionne correctement.  
-
-Le reste des étapes reste identique : vous pourrez désormais tester les permissions des utilisateurs et effectuer le nettoyage comme décrit dans l’exercice.
 
 
 ### 3. Attribuer des Rôles Différents aux Utilisateurs
