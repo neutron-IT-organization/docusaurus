@@ -64,17 +64,17 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
 
 1. **Créer un Projet pour Tester les Permissions** :  
    ```bash
-   oc new-project demo-user1
+   oc new-project rbac-demo
    ```
 
 2. **Attribuer des Rôles** :  
    - Donnez à `user1` le rôle `view` :
-     ```bash
-     oc policy add-role-to-user view user1 -n demo-user1
+     ```bashdemo-user1
+     oc policy add-role-to-user view user1 -n rbac-demo
      ```
    - Donnez à `user2` le rôle `edit` :
      ```bash
-     oc policy add-role-to-user edit user2 -n demo-user1
+     oc policy add-role-to-user edit user2 -n rbac-demo
      ```
 
 
@@ -85,14 +85,29 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
      ```bash
      oc login -u user1 -p password1
      ```
+     ```bash
+     Login successful.
+      You have access to the following projects and can switch between them with 'oc project <projectname>':
+
+      * demo-user1
+         openshift-virtualization-os-images
+
+      Using project "rbac-demo".
+     ```
    - Essayez d'exécuter les commandes suivantes :
      - **Lister les pods** (autorisé) :
        ```bash
        oc get pods -n demo-user1
        ```
+       ```bash
+       No resources found in demo-user1 namespace.
+       ```
      - **Créer un pod** (interdit) :
        ```bash
        oc run nginx --image=nginx -n demo-user1
+       ```
+       ```bash
+       Error from server (Forbidden): pods is forbidden: User "user1" cannot create resource "pods" in API group "" in the namespace "demo-user1"
        ```
 
 2. **Connexion en tant que `user2`** :  
