@@ -34,35 +34,6 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
    - Copiez la ligne générée.  
    - Répétez l'opération pour `user2` avec le mot de passe `password2`.
 
-3. **Créer un Fichier `htpasswd` Localement avec `vi`** :  
-
-1. Ouvrez un fichier nommé `htpasswd-file` avec l'éditeur `vi` :  
-   ```bash
-   vi htpasswd-file
-   ```
-
-2. Une fois dans l'éditeur, appuyez sur la touche `i` pour entrer en mode insertion.
-
-3. Collez les lignes générées pour les deux utilisateurs (par exemple, depuis le site [HostingCanada Htpasswd Generator](https://hostingcanada.org/htpasswd-generator/)) :  
-   ```
-   user1:$2y$05$examplehash1examplehash2examplehash3
-   user2:$2y$05$examplehash4examplehash5examplehash6
-   ```
-
-4. Une fois les lignes ajoutées, appuyez sur la touche `ESC` pour quitter le mode insertion.
-
-5. Sauvegardez et quittez `vi` en tapant :  
-   ```
-   :wq
-   ```  
-
-Vous avez maintenant un fichier `htpasswd-file` contenant les identifiants des utilisateurs.
-
-4. **Uploader le Fichier dans OpenShift** :  
-   Créez un secret contenant le fichier `htpasswd` :
-   ```bash
-   oc create secret generic htpasswd-secret --from-file=htpasswd=htpasswd-file -n openshift-config
-   ```
 
 ### 2. Configurer le Fournisseur d'Identité via la Console Web
 
