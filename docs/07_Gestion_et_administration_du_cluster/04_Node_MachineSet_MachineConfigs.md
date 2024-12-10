@@ -119,7 +119,7 @@ spec:
    ```
    Les nœuds concernés redémarreront et appliqueront les changements.
 
-![MachineConfig dashboard](./images/machineconfigs-dashboard.ong) 
+![MachineConfig dashboard](./images/machineconfigs-dashboard.png) 
 
 ## Gestion et Visualisation via la Console OpenShift : Détails et Navigation
 
