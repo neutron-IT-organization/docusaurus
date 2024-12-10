@@ -1,219 +1,162 @@
-# Exercice Guidé : Gestion des Rôles et Role Bindings dans OpenShift
+# Exercice Guidé : Gestion des Utilisateurs dans OpenShift
 
-Cet exercice vous guidera dans la configuration et la gestion des rôles et **role bindings** dans un cluster OpenShift. Vous apprendrez à attribuer des rôles aux utilisateurs, à tester les accès et à analyser les autorisations appliquées.
+Cet exercice guidé est conçu pour être réalisé en **mode démonstration par un seul participant**. Vous allez configurer un fournisseur d'identité avec **htpasswd**, ajouter deux utilisateurs, leur attribuer des droits différents, puis vérifier que leurs accès au cluster diffèrent en fonction des permissions attribuées.
 
+---
 
+## Objectifs de l'Exercice
 
-## **Objectifs de l'exercice**
+- Configurer un fournisseur d'identité (Identity Provider) `htpasswd` dans OpenShift.
+- Créer deux utilisateurs avec des identifiants distincts.
+- Attribuer des rôles différents à ces utilisateurs.
+- Vérifier que chaque utilisateur a des accès spécifiques au cluster.
+- Nettoyer le fournisseur d'identité et les utilisateurs créés.
 
-1. Créer et appliquer un rôle local et un rôle de cluster à un utilisateur.
-2. Associer des rôles aux utilisateurs à l’aide des **role bindings** et **cluster role bindings**.
-3. Tester l’accès d’un utilisateur en fonction des rôles attribués.
-4. Analyser les autorisations d'un utilisateur avec les outils d’OpenShift.
+---
 
+## Prérequis
 
+- Un cluster OpenShift opérationnel avec des droits administratifs.
+- OpenShift CLI (`oc`) installé et configuré.
+- Un outil pour gérer des fichiers comme `vi`, `nano`, ou un éditeur de texte similaire.
 
-## **Étape 1 : Créer un Rôle Local**
+---
 
-1. Créez un fichier YAML nommé `role-local.yaml` pour définir un rôle local dans un projet :
+## Étapes de l'Exercice
 
+### 1. Configurer le Fournisseur d'Identité `htpasswd`
+
+1. **Installer `htpasswd`** :  
+   Si `htpasswd` n’est pas installé, installez-le sur votre machine (exemple pour RHEL/CentOS) :
+   ```bash
+   sudo yum install httpd-tools
+   ```
+
+2. **Créer un fichier htpasswd** :  
+   Générez un fichier htpasswd contenant les utilisateurs :
+   ```bash
+   htpasswd -c -B -b htpasswd-file user1 password1
+   htpasswd -b htpasswd-file user2 password2
+   ```
+   - `user1` aura le mot de passe `password1`.
+   - `user2` aura le mot de passe `password2`.
+
+3. **Uploader le fichier comme Secret** :  
+   Créez un secret contenant le fichier htpasswd dans OpenShift :
+   ```bash
+   oc create secret generic htpasswd-secret --from-file=htpasswd=htpasswd-file -n openshift-config
+   ```
+
+4. **Configurer le fournisseur d'identité** :  
+   Mettez à jour la configuration OAuth pour utiliser `htpasswd` comme Identity Provider :
+   ```bash
+   oc edit oauth cluster
+   ```
+   Ajoutez le bloc suivant dans `spec.identityProviders` :
    ```yaml
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: Role
-   metadata:
-     name: viewer
-     namespace: YOURCITY-user-ns
-   rules:
-   - apiGroups: [""]
-     resources: ["pods"]
-     verbs: ["get", "list"]
+   spec:
+     identityProviders:
+     - name: htpasswd_provider
+       mappingMethod: claim
+       type: HTPasswd
+       htpasswd:
+         fileData:
+           name: htpasswd-secret
    ```
 
-   **Explication** :
-   - Le rôle **viewer** permet à un utilisateur de **lire** les pods dans le projet `YOURCITY-user-ns`.
-   - **`get`** et **`list`** sont les actions autorisées.
-
-2. Appliquez ce rôle dans le projet :
-
+5. **Vérifier la configuration** :  
+   Une fois appliquée, vérifiez que le fournisseur d'identité est actif :
    ```bash
-   oc apply -f role-local.yaml -n YOURCITY-user-ns
-   ```
-
-3. Vérifiez que le rôle a bien été créé :
-
-   ```bash
-   oc describe role viewer -n YOURCITY-user-ns
+   oc get oauth cluster -o yaml
    ```
 
 ---
 
-## **Étape 2 : Créer un Role Binding Local**
+### 2. Attribuer des Rôles Différents aux Utilisateurs
 
-1. Créez un fichier `rolebinding-local.yaml` pour associer un utilisateur à ce rôle local :
+1. **Ajouter les utilisateurs au cluster** :  
+   Connectez-vous avec les nouveaux utilisateurs pour qu'ils soient reconnus dans OpenShift.
 
-   ```yaml
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: RoleBinding
-   metadata:
-     name: viewer-binding
-     namespace: YOURCITY-user-ns
-   subjects:
-   - kind: User
-     name: user1
-     apiGroup: rbac.authorization.k8s.io
-   roleRef:
-     kind: Role
-     name: viewer
-     apiGroup: rbac.authorization.k8s.io
-   ```
+2. **Attribuer des rôles** :  
+   - Donnez à `user1` le rôle `view` sur un projet spécifique :
+     ```bash
+     oc create project demo-user1
+     oc policy add-role-to-user view user1 -n demo-user1
+     ```
+   - Donnez à `user2` le rôle `edit` sur le même projet :
+     ```bash
+     oc policy add-role-to-user edit user2 -n demo-user1
+     ```
 
-   **Explication** :
-   - Ce role binding lie l'utilisateur `user1` au rôle **viewer** dans le namespace `YOURCITY-user-ns`.
+---
 
-2. Appliquez ce role binding :
+### 3. Vérifier les Accès des Utilisateurs
 
+1. **Connexion en tant que `user1`** :  
+   - Connectez-vous en tant que `user1` dans la console web ou via `oc` :
+     ```bash
+     oc login -u user1 -p password1
+     ```
+   - Essayez d’exécuter les commandes suivantes dans le projet `demo-user1` :
+     - **Lister les pods** (autorisé) :
+       ```bash
+       oc get pods -n demo-user1
+       ```
+     - **Créer un pod** (interdit) :
+       ```bash
+       oc run nginx --image=nginx -n demo-user1
+       ```
+
+2. **Connexion en tant que `user2`** :  
+   - Connectez-vous en tant que `user2` :
+     ```bash
+     oc login -u user2 -p password2
+     ```
+   - Essayez les mêmes commandes dans le projet `demo-user1` :
+     - **Lister les pods** (autorisé) :
+       ```bash
+       oc get pods -n demo-user1
+       ```
+     - **Créer un pod** (autorisé) :
+       ```bash
+       oc run nginx --image=nginx -n demo-user1
+       ```
+
+3. **Observer les différences** :  
+   Notez que `user1` peut uniquement consulter les ressources, tandis que `user2` peut consulter et modifier les ressources du projet.
+
+---
+
+### 4. Nettoyage
+
+1. **Supprimer le projet et les permissions** :
    ```bash
-   oc apply -f rolebinding-local.yaml -n YOURCITY-user-ns
+   oc delete project demo-user1
    ```
 
-3. Vérifiez le role binding :
+2. **Supprimer le fournisseur d'identité** :  
+   - Éditez la configuration OAuth pour retirer le fournisseur `htpasswd_provider` :
+     ```bash
+     oc edit oauth cluster
+     ```
+     Supprimez le bloc correspondant au fournisseur `htpasswd_provider`.
 
+   - Supprimez le secret associé :
+     ```bash
+     oc delete secret htpasswd-secret -n openshift-config
+     ```
+
+3. **Supprimer les utilisateurs (optionnel)** :  
+   Bien qu’OpenShift ne supprime pas automatiquement les utilisateurs connectés via un fournisseur d’identité, vous pouvez manuellement nettoyer leurs traces :
    ```bash
-   oc describe rolebinding viewer-binding -n YOURCITY-user-ns
+   oc delete user user1
+   oc delete user user2
+   oc delete identity htpasswd_provider:user1
+   oc delete identity htpasswd_provider:user2
    ```
 
+---
 
-## **Étape 3 : Créer un Rôle de Cluster**
+## Conclusion
 
-1. Créez un fichier `role-cluster.yaml` pour définir un rôle de cluster qui permet de lister tous les projets du cluster :
-
-   ```yaml
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: ClusterRole
-   metadata:
-     name: project-lister
-   rules:
-   - apiGroups: [""]
-     resources: ["namespaces"]
-     verbs: ["list"]
-   ```
-
-   **Explication** :
-   - Le rôle **project-lister** permet de **lister** les namespaces (projets) dans le cluster.
-
-2. Appliquez ce rôle de cluster :
-
-   ```bash
-   oc apply -f role-cluster.yaml
-   ```
-
-3. Vérifiez que le rôle a bien été créé :
-
-   ```bash
-   oc describe clusterrole project-lister
-   ```
-
-
-## **Étape 4 : Créer un Cluster Role Binding**
-
-1. Créez un fichier `clusterrolebinding.yaml` pour associer un utilisateur à ce rôle de cluster :
-
-   ```yaml
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: ClusterRoleBinding
-   metadata:
-     name: project-lister-binding
-   subjects:
-   - kind: User
-     name: user2
-     apiGroup: rbac.authorization.k8s.io
-   roleRef:
-     kind: ClusterRole
-     name: project-lister
-     apiGroup: rbac.authorization.k8s.io
-   ```
-
-   **Explication** :
-   - Ce cluster role binding lie l'utilisateur `user2` au rôle **project-lister** au niveau du cluster.
-
-2. Appliquez ce cluster role binding :
-
-   ```bash
-   oc apply -f clusterrolebinding.yaml
-   ```
-
-3. Vérifiez le cluster role binding :
-
-   ```bash
-   oc describe clusterrolebinding project-lister-binding
-   ```
-
-
-## **Étape 5 : Tester les Autorisations d'un Utilisateur**
-
-1. Connectez-vous avec l'utilisateur `user1` pour tester l'accès au projet `YOURCITY-user-ns` :
-
-   ```bash
-   oc login -u user1
-   ```
-
-2. Essayez de lister les pods dans le projet `YOURCITY-user-ns` :
-
-   ```bash
-   oc get pods -n YOURCITY-user-ns
-   ```
-
-   **Ce que vous devriez voir** :  
-   - L'utilisateur **user1** devrait pouvoir lister les pods, car il a le rôle **viewer**.
-
-3. Connectez-vous avec l'utilisateur `user2` pour tester l'accès au cluster :
-
-   ```bash
-   oc login -u user2
-   ```
-
-4. Essayez de lister les namespaces du cluster :
-
-   ```bash
-   oc get namespaces
-   ```
-
-   **Ce que vous devriez voir** :  
-   - L'utilisateur **user2** devrait pouvoir lister les namespaces, car il a le rôle **project-lister**.
-
-
-## **Étape 6 : Analyser les Autorisations**
-
-1. Pour vérifier les rôles et role bindings d'un utilisateur, utilisez la commande suivante pour **user1** :
-
-   ```bash
-   oc describe rolebinding viewer-binding -n YOURCITY-user-ns
-   ```
-
-2. Pour vérifier les rôles et cluster role bindings d'un utilisateur, utilisez la commande suivante pour **user2** :
-
-   ```bash
-   oc describe clusterrolebinding project-lister-binding
-   ```
-
-## **Étape 7 : Nettoyer l'Environnement**
-
-Pour supprimer les ressources créées :
-
-```bash
-oc delete role viewer -n YOURCITY-user-ns
-oc delete rolebinding viewer-binding -n YOURCITY-user-ns
-oc delete clusterrole project-lister
-oc delete clusterrolebinding project-lister-binding
-```
-
-## **Conclusion**
-
-Dans cet exercice, vous avez appris à :
-
-1. Créer des rôles locaux et des rôles de cluster dans OpenShift.
-2. Associer des utilisateurs à ces rôles à l’aide des **role bindings** et **cluster role bindings**.
-3. Tester les autorisations d’un utilisateur pour vérifier l’accès aux ressources.
-4. Analyser les rôles et **role bindings** appliqués à un utilisateur.
-
-**Astuce** : Lors de la gestion des accès, assurez-vous d'appliquer le principe du moindre privilège en attribuant uniquement les rôles nécessaires pour chaque utilisateur ou groupe.
+Cet exercice vous a permis de configurer un fournisseur d’identité dans OpenShift, de gérer des utilisateurs et de leur attribuer des permissions spécifiques. En suivant ce processus, vous êtes capable de restreindre ou d’accorder des droits adaptés aux besoins des différents utilisateurs du cluster. Le nettoyage final garantit un environnement propre, prêt pour de futurs exercices ou configurations.
