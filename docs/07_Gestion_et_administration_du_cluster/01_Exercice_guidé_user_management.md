@@ -51,8 +51,8 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
 4. **Configurer le Fournisseur `htpasswd`** :  
    - Choisissez **HTPasswd** comme type de fournisseur.
    - Remplissez les champs demandés :
-     - **Name** : Entrez un nom pour le fournisseur, comme `htpasswd_provider`.
-     - **Secret** : Sélectionnez le secret que vous avez créé (par exemple, `htpasswd-secret`).
+     - **Name** : Entrez en nom pour le fournisseur: `YOURCITY_htpasswd_provider`.
+     - **Upload an HTPasswd file** : Collez les lignes générées lors de l'étape précédente.
 
 5. **Enregistrer la Configuration** :  
    - Cliquez sur **Save** pour appliquer la configuration.
@@ -63,7 +63,6 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
 
 Le reste des étapes reste identique : vous pourrez désormais tester les permissions des utilisateurs et effectuer le nettoyage comme décrit dans l’exercice.
 
----
 
 ### 3. Attribuer des Rôles Différents aux Utilisateurs
 
@@ -82,7 +81,6 @@ Le reste des étapes reste identique : vous pourrez désormais tester les permis
      oc policy add-role-to-user edit user2 -n demo-user1
      ```
 
----
 
 ### 4. Vérifier les Accès des Utilisateurs
 
@@ -119,7 +117,6 @@ Le reste des étapes reste identique : vous pourrez désormais tester les permis
 3. **Observer les Différences** :  
    Notez que `user1` a des permissions limitées à la consultation des ressources, tandis que `user2` peut les consulter et les modifier.
 
----
 
 ### 5. Nettoyage
 
@@ -149,7 +146,6 @@ Le reste des étapes reste identique : vous pourrez désormais tester les permis
    oc delete identity htpasswd_provider:user2
    ```
 
----
 
 ## Conclusion
 
