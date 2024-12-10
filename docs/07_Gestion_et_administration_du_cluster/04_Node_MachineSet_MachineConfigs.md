@@ -146,7 +146,7 @@ La console OpenShift offre une interface utilisateur intuitive pour surveiller l
    - Vous pouvez étiqueter ou annoter les nœuds directement depuis la console pour faciliter leur identification.
    - La console permet également de lancer une commande de débogage pour un nœud spécifique via l’option **Debug Node**.
 
-![MachineConfig dashboard](./images/node-dashboard.ong) 
+![MachineConfig dashboard](./images/node-dashboard.png) 
 
 ### Gestion des MachineSets et MachineConfigs
 
