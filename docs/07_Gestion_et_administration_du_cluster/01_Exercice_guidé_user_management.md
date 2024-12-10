@@ -64,32 +64,33 @@ Vous avez maintenant un fichier `htpasswd-file` contenant les identifiants des u
    oc create secret generic htpasswd-secret --from-file=htpasswd=htpasswd-file -n openshift-config
    ```
 
----
+### 2. Configurer le Fournisseur d'Identité via la Console Web
 
-### 2. Configurer le Fournisseur d'Identité
+1. **Accéder à la Console Web d’OpenShift** :  
+   Connectez-vous à la console web d’OpenShift avec un compte ayant des droits administratifs.
 
-1. **Modifier la Configuration OAuth** :  
-   Mettez à jour la configuration OAuth pour inclure le fournisseur d’identité `htpasswd` :
-   ```bash
-   oc edit oauth cluster
-   ```
-   Ajoutez le bloc suivant dans `spec.identityProviders` :
-   ```yaml
-   spec:
-     identityProviders:
-     - name: htpasswd_provider
-       mappingMethod: claim
-       type: HTPasswd
-       htpasswd:
-         fileData:
-           name: htpasswd-secret
-   ```
+2. **Naviguer vers les Paramètres du Cluster** :  
+   - Dans le menu de gauche, cliquez sur **Administration**.
+   - Ensuite, sélectionnez **Cluster Settings**.
 
-2. **Vérifier la Configuration** :  
-   Une fois la configuration appliquée, vérifiez que le fournisseur d'identité est actif :
-   ```bash
-   oc get oauth cluster -o yaml
-   ```
+3. **Ajouter un Fournisseur d’Identité** :  
+   - Dans l'onglet **Configuration**, repérez la section **OAuth**.
+   - Cliquez sur **Add** dans la section des **Identity Providers**.
+
+4. **Configurer le Fournisseur `htpasswd`** :  
+   - Choisissez **HTPasswd** comme type de fournisseur.
+   - Remplissez les champs demandés :
+     - **Name** : Entrez un nom pour le fournisseur, comme `htpasswd_provider`.
+     - **Secret** : Sélectionnez le secret que vous avez créé (par exemple, `htpasswd-secret`).
+
+5. **Enregistrer la Configuration** :  
+   - Cliquez sur **Save** pour appliquer la configuration.
+
+6. **Vérifier la Configuration** :  
+   - Une fois enregistré, vous devriez voir le fournisseur d’identité `htpasswd_provider` répertorié dans la section des Identity Providers.  
+   - Vérifiez également que la connexion des utilisateurs via ce fournisseur fonctionne correctement.  
+
+Le reste des étapes reste identique : vous pourrez désormais tester les permissions des utilisateurs et effectuer le nettoyage comme décrit dans l’exercice.
 
 ---
 
