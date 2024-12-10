@@ -69,7 +69,7 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
 
 2. **Attribuer des Rôles** :  
    - Donnez à `user1` le rôle `view` :
-     ```bashdemo-user1
+     ```bash
      oc policy add-role-to-user view user1 -n rbac-demo
      ```
    - Donnez à `user2` le rôle `edit` :
@@ -89,7 +89,7 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
      Login successful.
       You have access to the following projects and can switch between them with 'oc project <projectname>':
 
-      * demo-user1
+      * rbac-demo
          openshift-virtualization-os-images
 
       Using project "rbac-demo".
@@ -97,17 +97,17 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
    - Essayez d'exécuter les commandes suivantes :
      - **Lister les pods** (autorisé) :
        ```bash
-       oc get pods -n demo-user1
+       oc get pods -n rbac-demo
        ```
        ```bash
-       No resources found in demo-user1 namespace.
+       No resources found in rbac-demo namespace.
        ```
      - **Créer un pod** (interdit) :
        ```bash
-       oc run nginx --image=nginx -n demo-user1
+       oc run nginx --image=nginx -n rbac-demo
        ```
        ```bash
-       Error from server (Forbidden): pods is forbidden: User "user1" cannot create resource "pods" in API group "" in the namespace "demo-user1"
+       Error from server (Forbidden): pods is forbidden: User "user1" cannot create resource "pods" in API group "" in the namespace "rbac-demo"
        ```
 
 2. **Connexion en tant que `user2`** :  
@@ -118,11 +118,11 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
    - Essayez les mêmes commandes :
      - **Lister les pods** (autorisé) :
        ```bash
-       oc get pods -n demo-user1
+       oc get pods -n rbac-demo
        ```
      - **Créer un pod** (autorisé) :
        ```bash
-       oc run nginx --image=nginx -n demo-user1
+       oc run nginx --image=nginx -n rbac-demo
        ```
 
 3. **Observer les Différences** :  
@@ -133,7 +133,7 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
 
 1. **Supprimer le Projet et les Permissions** :  
    ```bash
-   oc delete project demo-user1
+   oc delete project rbac-demo
    ```
 
 2. **Supprimer le Fournisseur d'Identité** :  
