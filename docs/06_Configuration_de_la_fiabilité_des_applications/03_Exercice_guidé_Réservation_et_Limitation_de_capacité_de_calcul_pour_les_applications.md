@@ -1,12 +1,7 @@
-Voici une version mise à jour de l'exercice avec vos nouvelles exigences : 
-
----
-
 # **Exercice Guidé : Gestion des Requests, Limites et Quotas dans OpenShift**
 
 Cet exercice vous guidera dans la configuration et la gestion des **requests**, **limites** et **quotas** pour un déploiement dans un projet OpenShift. Vous apprendrez à configurer ces paramètres, à tester les limites et à observer l'utilisation réelle des ressources par rapport aux quotas définis.
 
----
 
 ## **Objectifs de l'exercice**
 
@@ -15,7 +10,6 @@ Cet exercice vous guidera dans la configuration et la gestion des **requests**, 
 3. Tester le comportement d'OpenShift lorsque le quota est atteint en essayant de scaler un déploiement.  
 4. Analyser les consommations via les quotas en observant les statuts des ressources consommées (**used** vs **hard**).  
 
----
 
 ## **Étape 1 : Créer un Déploiement avec Requests et Limites**
 
@@ -74,7 +68,6 @@ Cet exercice vous guidera dans la configuration et la gestion des **requests**, 
    oc describe pod -l app=test-limite -n YOURCITY-user-ns
    ```
 
----
 
 ## **Étape 2 : Configurer un Quota de Ressources**
 
@@ -106,7 +99,6 @@ Cet exercice vous guidera dans la configuration et la gestion des **requests**, 
    oc describe resourcequota quota-cpu-memoire -n YOURCITY-user-ns
    ```
 
----
 
 ## **Étape 3 : Tester le Dépassement du Quota**
 
@@ -124,7 +116,6 @@ Cet exercice vous guidera dans la configuration et la gestion des **requests**, 
 
 Voici les détails ajoutés à l'étape 3 pour expliquer ce que vous êtes censé observer dans les événements lorsque le quota est dépassé :  
 
----
 
 ## **Étape 3 : Tester le Dépassement du Quota**
 
@@ -165,8 +156,6 @@ Avec cette explication, les utilisateurs sauront interpréter les messages des �
    ``
 
 
----
-
 ## **Étape 4 : Analyser les Consommations des Quotas**
 
 1. Vérifiez les consommations actuelles des quotas avec :  
@@ -196,8 +185,6 @@ Avec cette explication, les utilisateurs sauront interpréter les messages des �
    oc adm top pod -n YOURCITY-user-ns
    ```
 
----
-
 ## **Étape 5 : Nettoyer l'Environnement**
 
 Pour supprimer les ressources créées :  
@@ -207,7 +194,6 @@ oc delete deployment test-limite -n YOURCITY-user-ns
 oc delete resourcequota quota-cpu-memoire -n YOURCITY-user-ns
 ```
 
----
 
 ## **Conclusion**
 
