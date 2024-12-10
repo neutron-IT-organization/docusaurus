@@ -58,15 +58,13 @@ Cet exercice guidé est conçu pour être réalisé en **mode démonstration par
    - Cliquez sur **Save** pour appliquer la configuration.
 
 ![Create htpasswd](./images/create-htpasswd.png)
- 
-
 
 
 ### 3. Attribuer des Rôles Différents aux Utilisateurs
 
 1. **Créer un Projet pour Tester les Permissions** :  
    ```bash
-   oc create project demo-user1
+   oc new-project demo-user1
    ```
 
 2. **Attribuer des Rôles** :  
