@@ -93,6 +93,8 @@ Remplacez `<node-name>` par le nom d’un nœud spécifique.
              - ssh-rsa AAAA...your-key
      ```
 
+![ssh machine config](./images/ssh-machine-config.png) 
+
 4. **Retournez à la liste principale** :
    - Une fois l’analyse terminée, revenez à la vue principale en cliquant sur **Back to MachineConfigs**.
 
