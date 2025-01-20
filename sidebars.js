@@ -35,7 +35,7 @@ const sidebars = {
       type: 'category',
       label: '01_Présentation_de_Kubernetes_et_Openshift',
       items: [
-        '01_Présentation_de_Kubernetes_et_Openshift/00_Presentation_d_Openshift',
+        'docs/01_Présentation_de_Kubernetes_et_Openshift/00_Presentation_d_Openshift',
         '01_Présentation_de_Kubernetes_et_Openshift/01_Quiz_Presentation_d_Openshift',
         '01_Présentation_de_Kubernetes_et_Openshift/02_Exploration_de_la_console',
         '01_Présentation_de_Kubernetes_et_Openshift/03_Exercice_guidé_Exploration_de_la_console',
