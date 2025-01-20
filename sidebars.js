@@ -20,6 +20,10 @@ const sidebars = {
   
   tutorialSidebar: [
     {
+      type: 'doc',
+      id: 'intro',
+    },
+    {
       type: 'category',
       label: 'Introduction',
       items: [
@@ -114,12 +118,7 @@ const sidebars = {
         'Gestion_et_administration_du_cluster/Résumé',
       ],
     },
-    {
-      type: 'doc',
-      id: 'intro',
-    },
-  ],
-   
+  ],   
 };
 
 export default sidebars;
