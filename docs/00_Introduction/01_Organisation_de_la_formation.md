@@ -40,6 +40,6 @@ Pour les manipulations pratiques, deux options sont possibles. Les participants 
 
 Ces sessions pratiques sont conçues pour offrir une expérience d'apprentissage immersive et interactive, permettant aux participants de mettre en application les concepts théoriques dans des scénarios réels. Le formateur sera présent pour guider les participants, répondre à leurs questions et fournir des clarifications au besoin.
 
-Enfin n'hésitez pas des questions !
+Enfin n'hésitez pas à nous poser des questions !
 
 ![container stack](./images/chat.png)

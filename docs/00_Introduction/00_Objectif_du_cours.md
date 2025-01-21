@@ -1,6 +1,6 @@
 # Objectif du cours
 
-Bienvenue dans ce cours sur OpenShift et Kubernetes. L'objectif de ce cours est de vous fournir une compréhension complète et pratique de l'utilisation de Kubernetes et OpenShift pour déployer, gérer et mettre à l'échelle des applications conteneurisées.
+L'objectif de ce cours est de vous fournir une compréhension complète et pratique de l'utilisation  d'OpenShift pour déployer, gérer et mettre à l'échelle des applications conteneurisées.
 
 ## À qui s'adresse ce cours ?
 

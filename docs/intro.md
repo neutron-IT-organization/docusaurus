@@ -1,6 +1,6 @@
 # Bienvenue dans la Formation OpenShift : Exploitation d'un cluster Openshift
 
-Bienvenue dans notre formation complète OpenShift ! Ce cours est conçu pour vous fournir une compréhension approfondie de cette plateforme essentielle pour la gestion des conteneurs et le déploiement d'applications modernes. Que vous soyez un débutant curieux ou un professionnel cherchant à approfondir ses compétences, ce cours est structuré pour répondre à vos besoins.
+Bienvenue dans notre formation complète OpenShift ! Ce cours est conçu pour vous fournir une compréhension approfondie de cette plateforme de gestion des conteneurs et de déploiement d'applications modernes. Que vous soyez un débutant curieux ou un professionnel cherchant à approfondir ses compétences, ce cours est structuré pour répondre à vos besoins.
 
 ## Structure du Cours
 
@@ -24,7 +24,7 @@ Explorer les interfaces utilisateur et les commandes de base pour interagir avec
 
 Apprendre à déployer, gérer et surveiller des applications conteneurisées sur ces plateformes.
 
-5. **Déployer des applications en réseau**
+5. **Les réseaux dans Openshift**
 
 Configurer et gérer les réseaux pour vos applications, incluant les services et les ingress.
 
@@ -36,13 +36,13 @@ Comprendre les options de stockage disponibles et comment les configurer et les 
 
 Mettre en œuvre des pratiques pour garantir la haute disponibilité et la résilience de vos applications.
 
-8. **Gestion des mises à jour des applications**
+8. **Gestion et administration du cluster**
 
 Apprendre à mettre à jour vos applications de manière continue et sans interruption.
 
 ## Méthodologie
 
-Notre approche pédagogique intègre des sessions théoriques suivies de laboratoires pratiques. Chaque module théorique est immédiatement suivi d’exercices pratiques pour renforcer l'apprentissage et assurer que vous pouvez appliquer les concepts dans des situations réelles. Les sessions pratiques incluront des exercices guidés, des projets de groupe et des études de cas basées sur des scénarios du monde réel.
+Notre approche pédagogique intègre des sessions théoriques suivies de laboratoires pratiques. Chaque module théorique est immédiatement suivi d’exercices pratiques ou de quiz pour renforcer l'apprentissage et assurer que vous pouvez appliquer les concepts dans des situations réelles. Les sessions pratiques incluront des exercices guidés sur des scénarios du monde réel.
 
 ## Objectifs d'Apprentissage
 
@@ -55,4 +55,5 @@ Notre approche pédagogique intègre des sessions théoriques suivies de laborat
 - Mettre en œuvre des stratégies de mise à jour continue.
 
 Nous sommes impatients de vous accompagner dans ce voyage d'apprentissage et de vous voir progresser vers la maîtrise de Kubernetes et OpenShift. Préparez-vous à plonger dans l'univers passionnant de la gestion des conteneurs et à acquérir des compétences qui sont de plus en plus cruciales dans le paysage technologique actuel.
+
 Bonne formation !
