@@ -9,21 +9,33 @@ Dans cet exercice, nous allons explorer comment examiner et manipuler les ressou
 3. Modifier le nom du déploiement et supprimer les champs inutilisés.
 4. Appliquer les modifications au cluster.
 
-### Étape 1 : Affichage d'informations spécifiques sur les Pods
 
-Utilisez la commande suivante pour afficher les noms et statuts des pods dans le cluster, en utilisant un format de sortie personnalisé.
+### Étape 1 : Affichage des Pods avec une vue classique puis personnalisée
+
+Commencez par afficher une vue générale des pods dans le cluster pour examiner toutes les informations par défaut :
 
 ```bash
-oc get pods -o custom-columns=NAME:.metadata.name,STATUS:.status.phase -n l03p02
+oc get pods -n l03p02
+```
+
+**Exemple de sortie :**
+```
+NAME                          READY   STATUS    RESTARTS   AGE
+l03p02-app-75bb5d5698-c7dzj   1/1     Running   0          10m
+```
+
+Ensuite, affinez l'affichage pour ne montrer que les informations essentielles, comme le nom et le statut des pods, en utilisant des colonnes personnalisées :
+
+```bash
+oc get pods --custom-columns=NAME:.metadata.name,STATUS:.status.phase -n l03p02
 ```
 
 **Résultat attendu :**
 ```
-NAME                STATUS
-example-pod-1       Running
-example-pod-2       Pending
-example-pod-3       Running
+NAME                          STATUS
+l03p02-app-75bb5d5698-c7dzj   Running
 ```
+
 
 ### Étape 2 : Extraction d'un Manifeste YAML
 
