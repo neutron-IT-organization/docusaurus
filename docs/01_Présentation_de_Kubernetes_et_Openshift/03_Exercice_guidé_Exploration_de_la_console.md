@@ -24,7 +24,7 @@ https://console-openshift-console.apps.neutron-sno-office.intraneutron.fr/
 
 Pour utiliser la perspective Developer de la console Web et créer votre premier projet :
 
-1. Dans la vue developer, cliquez sur votre Project en haut à gauche puis sur  "Create a new project" pour ouvrir l'assistant Create Project.
+1. Dans la vue developer, cliquez sur votre Project en haut à gauche puis sur  "Create project" pour ouvrir l'assistant Create Project.
 
 ![Create Project](./images/create_project.png)
 

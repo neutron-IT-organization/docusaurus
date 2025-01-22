@@ -133,4 +133,3 @@ La vue développeur de la console OpenShift est conçue pour optimiser le dével
 ## Conclusion
 
 La console web d'OpenShift est un outil puissant et intuitif pour gérer vos projets, déployer des applications et surveiller l'état de votre cluster. Familiarisez-vous avec ses fonctionnalités pour tirer le meilleur parti de votre environnement OpenShift. Dans la prochaine section, nous réaliserons un exercice guidé pour explorer la console en détail et effectuer des tâches courantes.
-c

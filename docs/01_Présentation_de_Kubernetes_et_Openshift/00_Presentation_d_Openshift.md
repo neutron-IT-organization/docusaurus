@@ -2,7 +2,7 @@
 
 ## Objectif
 
-L'objectif de cette première partie est de fournir une compréhension solide des concepts fondamentaux qui sous-tendent l'utilisation des conteneurs, l'orchestration de ces conteneurs avec Kubernetes, et la façon dont OpenShift s'appuie sur Kubernetes pour offrir une plateforme de conteneurs complète et prête pour les entreprises. Cette partie est divisée en trois sections : une introduction aux conteneurs, une explication de Kubernetes et de l'orchestration de conteneurs, et une présentation d'OpenShift avec ses spécificités par rapport à Kubernetes.
+L'objectif de cette première partie est de fournir une compréhension des concepts fondamentaux qui sous-tendent l'utilisation des conteneurs, l'orchestration de ces conteneurs avec Kubernetes, et la façon dont OpenShift s'appuie sur Kubernetes pour offrir une plateforme de conteneurs complète et prête pour les entreprises. Cette partie est divisée en trois sections : une introduction aux conteneurs, une explication de Kubernetes et de l'orchestration de conteneurs, et une présentation d'OpenShift avec ses spécificités par rapport à Kubernetes.
 
 ## Comprendre les Conteneurs
 
@@ -48,7 +48,7 @@ Kubernetes est une plateforme d'orchestration de conteneurs open source qui simp
 
 Ainsi, Kubernetes fournit les outils nécessaires pour gérer des conteneurs à grande échelle, ce qui est crucial pour les environnements de production modernes. Pour aller encore plus loin, OpenShift offre une solution basée sur Kubernetes avec des fonctionnalités supplémentaires pour les entreprises.
 
-## Section 3 : Découverte d'OpenShift
+## OpenShift
 
 ### Qu'est-ce qu'OpenShift?
 
