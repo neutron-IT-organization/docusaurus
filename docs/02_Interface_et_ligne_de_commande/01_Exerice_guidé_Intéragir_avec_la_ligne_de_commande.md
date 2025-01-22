@@ -96,28 +96,12 @@ Vous verrez une sortie similaire à celle-ci :
 Using project "prague-user-ns" from context named "prague-user-context" on server "https://172.30.0.1:443".
 ```
 
-2. **Changez de namespace (si nécessaire)** :
-```bash
-oc project <nom_du_namespace>
-```
-Par exemple :
-```bash
-oc project myproject
-```
-Vous verrez une confirmation du changement de projet :
-```
-Now using project "myproject" on server "https://api.ocp4.example.com:6443".
-```
-
-Les namespaces (ou projets) permettent d'isoler les ressources dans un cluster. Cette commande vous permet de vérifier et de changer le namespace actif pour organiser et accéder aux ressources spécifiques à un projet.
-
----
 
 **4. Création d'une Nouvelle Application**
 
 Nous allons maintenant créer une application simple en utilisant une image de base. Suivez ces étapes :
 
-1. **Créez une nouvelle application en utilisant une image de base** :
+2. **Créez une nouvelle application en utilisant une image de base** :
 ```bash
 oc new-app --image=quay.io/neutron-it/p02l01-go-app
 ```
@@ -146,7 +130,7 @@ Cette commande crée une nouvelle application basée sur l'image "p02l01-go-app"
 
 ---
 
-**5. Description de l'Application**
+**3. Description de l'Application**
 
 Pour obtenir des détails sur l'application que vous venez de créer :
 
@@ -184,7 +168,7 @@ workspacee44a9674bf734f38-56fc7fdc44-6n2nr   2/2     Running   0          26m
 
 ---
 
-**6. Affichage des Logs de l'Application**
+**4. Affichage des Logs de l'Application**
 
 Pour diagnostiquer les problèmes ou vérifier que tout fonctionne correctement :
 
@@ -201,7 +185,7 @@ Les logs sont essentiels pour diagnostiquer les problèmes et vérifier que l'ap
 
 ---
 
-**7. Exécution de Commandes dans un Pod**
+**5. Exécution de Commandes dans un Pod**
 
 Pour interagir avec les conteneurs de votre application, vous pouvez exécuter des commandes directement dans un pod en utilisant `oc exec` :
 
@@ -246,7 +230,7 @@ sh-4.4$ exit
 
 ---
 
-**8. Suppression de l'Application**
+**6. Suppression de l'Application**
 
 Enfin, pour nettoyer les ressources créées :
 
