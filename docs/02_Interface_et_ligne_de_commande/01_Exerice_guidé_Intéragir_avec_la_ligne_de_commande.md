@@ -12,23 +12,23 @@ Toutes les commandes doivent être exécutées dans le **terminal web d'OpenShif
 
 Pour commencer, vous devez vous connecter à votre cluster OpenShift :
 
-1. **Accédez à la console Web OpenShift**.
-2. **Cliquez sur votre nom d'utilisateur en haut à droite**.
-3. **Sélectionnez "Copy login command"**.
+1. Accédez à la console Web OpenShift.
+2. Cliquez sur votre nom d'utilisateur en haut à droite**.
+3. Sélectionnez "Copy login command".
 
     ![Copy login command](./images/copy-login-command.svg)
 
-4. **Cliquez sur "Display Token"** pour afficher le token.
+4. Cliquez sur **"Display Token"** pour afficher le token.
 
     ![Display Token](./images/display-token.png)
 
-5. **Copiez la commande de connexion affichée**.
-6. **Ouvrez le terminal web OpenShift en haut à droite**.
+5. Copiez la commande de connexion affichée.
+6. Ouvrez le terminal web OpenShift en haut à droite.
 ![Open web terminal](./images/open-web-terminal.svg)
-7. **Cliquez sur Open terminal in a new tab et selectionnez votre projet. Cliquez sur start. Le premier démarrage peut prendre quelques secondes**
-----
+7. Cliquez sur Open terminal in a new tab et selectionnez votre projet. Cliquez sur start. Le premier démarrage peut prendre quelques secondes**
+
 ![new-onglet terminal](./images/new-onglet-web-terminal.svg)
-----
+
 ![select project terminal](./images/select-project.svg)
 
 6. **Collez et exécutez cette commande dans votre terminal web OpenShift**.
