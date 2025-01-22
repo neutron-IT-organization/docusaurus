@@ -25,7 +25,7 @@ Les objets Kubernetes contiennent deux champs qui régissent la configuration de
 
 Le plan de contrôle Kubernetes gère continuellement et activement l’état réel de chaque objet pour qu’il corresponde à l’état souhaité que vous avez indiqué.
 
-### Formats de sortie YAML et JSON
+### Formats de sortie YAML 
 
 Pour analyser et écrire des scripts, Kubernetes fournit des options de sortie aux formats YAML et JSON. La commande `oc` permet  d'extraire ces informations.
 

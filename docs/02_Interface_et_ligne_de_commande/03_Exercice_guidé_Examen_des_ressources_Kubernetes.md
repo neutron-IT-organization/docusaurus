@@ -14,7 +14,7 @@ Dans cet exercice, nous allons explorer comment examiner et manipuler les ressou
 Utilisez la commande suivante pour afficher les noms et statuts des pods dans le cluster, en utilisant un format de sortie personnalisé.
 
 ```bash
-oc get pods -o custom-columns=NAME:.metadata.name,STATUS:.status.phase
+oc get pods -o custom-columns=NAME:.metadata.name,STATUS:.status.phase -n l03p02
 ```
 
 **Résultat attendu :**
