@@ -39,11 +39,11 @@ Créez un projet nommé "console-exploration-YOURCITY" à l'aide de cet assistan
 
 4. Pour déployer un exemple d'application dans le projet :
 
-   - Cliquez dans "Create applications using samples" sur le lien "Basic Quarkus".
+   - Cliquez sur "Container images".
 
-   ![Basic quarkus](./images/basic_quarkus.png)
+   ![Basic quarkus](./images/container_image.png)
 
-   - Examinez les valeurs par défaut de l'exemple d'application, puis sélectionnez "Create" en bas de la page.
+   - Dans "Image name from external registry" ecrivez ```docker.io/openshift/hello-openshift```. Examinez les valeurs par défaut de l'exemple d'application, puis sélectionnez "Create" en bas de la page.
 
    ![Create application](./images/create_application.png)
 
@@ -60,7 +60,7 @@ Créez un projet nommé "console-exploration-YOURCITY" à l'aide de cet assistan
 
    ![Get route](./images/get_route.png)
 
-   ![Result](./images/result_quarkus.png)
+   ![Result](./images/result_hello_world.png)
 
 ## Étape 4 : Gérer et superviser votre application
 
