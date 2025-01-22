@@ -91,7 +91,7 @@ status:
 Ouvrez le fichier `deployment.yaml` dans un votre terminal et apportez les modifications suivantes :
 
 
-1. ```shell vi deployment.yaml ```
+1. ```vi deployment.yaml ```
 2. Enlevez toutes les metadata sauf "name" et "namespace"
 2. Changez le nom du déploiement à `<YOUR-CITY>-l03p02-app`.
 3. Changez le nom du namespace `<YOUR-CITY>-user-ns`.
@@ -136,6 +136,14 @@ oc apply -f deployment.yaml
 ![prague app](./images/prague-l03p02-app.png)
 
 Cette commande créera un nouveau déploiement nommé `prague-l03p02-app` avec la configuration spécifiée.
+
+### Étape 5 : Nettoyage des Ressources (Clean Up)
+
+Pour éviter d'encombrer votre cluster, supprimez les ressources créées lors de cet exercice. 
+
+```bash
+oc delete -f deployment.yaml
+```
 
 
 ### Conclusion
