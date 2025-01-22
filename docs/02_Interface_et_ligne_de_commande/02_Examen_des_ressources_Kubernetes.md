@@ -18,18 +18,16 @@ Dans cette section, nous avons pour objectifs de :
 
 ### Spécification et statut des objets Kubernetes
 
-Presque tous les objets Kubernetes contiennent deux champs d’objets imbriqués qui régissent la configuration de l’objet : l’objet **spec** et l’objet **status**.
+Les objets Kubernetes contiennent deux champs qui régissent la configuration de l’objet : le champ **spec** et le champ **status**.
 
 - **spec** : décrit l’état prévu de la ressource. Vous spécifiez la section **spec** de la ressource lors de la création de l’objet.
 - **status** : décrit l’état actuel de la ressource. Les contrôleurs Kubernetes mettent à jour en continu le **status** de l’objet pendant toute sa durée de vie.
 
 Le plan de contrôle Kubernetes gère continuellement et activement l’état réel de chaque objet pour qu’il corresponde à l’état souhaité que vous avez indiqué.
 
-Le champ **status** utilise une collection d’objets de ressource condition avec les champs suivants.
-
 ### Formats de sortie YAML et JSON
 
-Pour analyser et écrire des scripts, Kubernetes fournit des options de sortie aux formats YAML et JSON. Utilisons la commande `oc` pour extraire ces informations.
+Pour analyser et écrire des scripts, Kubernetes fournit des options de sortie aux formats YAML et JSON. La commande `oc` permet  d'extraire ces informations.
 
 #### Exemple avec `-o yaml`
 

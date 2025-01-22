@@ -1,4 +1,4 @@
-# **Exercice Guidé : Gestion des Requests, Limites et Quotas dans OpenShift**
+# Exercice Guidé : Gestion des Requests, Limites et Quotas dans OpenShift
 
 Cet exercice vous guidera dans la configuration et la gestion des **requests**, **limites** et **quotas** pour un déploiement dans un projet OpenShift. Vous apprendrez à configurer ces paramètres, à tester les limites et à observer l'utilisation réelle des ressources par rapport aux quotas définis.
 
